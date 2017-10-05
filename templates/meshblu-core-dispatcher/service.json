@@ -1,0 +1,8 @@
+{
+  "image": "octoblu/meshblu-core-dispatcher:latest",
+  "env_file": "./env.d/meshblu-core-dispatcher.env",
+  "deploy": {
+    "replicas": 2
+  },
+  "networks": ["meshblu"]
+}

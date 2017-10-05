@@ -50,11 +50,8 @@ describe("Environment", function() {
           TOKEN: "meshblu-pepper",
         },
         "meshblu-core-worker-webhook": {
-          MONGODB_URI: "mongodb://localhost",
           PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-          PUBLIC_KEY_BASE64: "meshblu-public-key-base64",
           REDIS_URI: "redis://localhost",
-          TOKEN: "meshblu-pepper",
         },
       })
     })

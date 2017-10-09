@@ -1,7 +1,7 @@
 const { beforeEach, it, expect } = global
 const Environment = require("../../lib/environment")
 
-describe("Environment", function() {
+describe("Generate Environment", function() {
   context("when generating a single service", function() {
     beforeEach("create environment", function() {
       const values = {

@@ -15,10 +15,22 @@ class Command {
         help: "Print this help and exit.",
       },
       {
+        names: ["init"],
+        type: "bool",
+        help: "Generate defaults json file",
+      },
+      {
         names: ["defaults", "d"],
         type: "string",
+        completionType: "filename",
         help: "A json file containing the default environment variables",
         default: "./defaults.json",
+      },
+      {
+        names: ["services", "s"],
+        type: "arrayOfString",
+        help: "A list of services to generators",
+        default: ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"],
       },
     ]
 
@@ -35,19 +47,23 @@ class Command {
 
   run() {
     const opts = this.parseOptions()
+    if (opts.init) return this.init()
     this.compose(opts)
     this.environment(opts)
   }
 
-  compose() {
-    const services = ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"]
+  init({ services }) {
+    const environment = new Environment({ services })
+    return fs.writeJSONSync(path.resolve("./defaults.json"), environment.defaults())
+  }
+
+  compose({ services }) {
     const compose = new Compose({ services })
     console.log(JSON.stringify(compose.toJSON(), null, 2))
   }
 
-  environment({ defaults }) {
+  environment({ services, defaults }) {
     const values = fs.readJSONSync(path.resolve(defaults))
-    const services = ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"]
     const environment = new Environment({ services, values })
     console.log(JSON.stringify(environment.toJSON(), null, 2))
   }

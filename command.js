@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 
 const dashdash = require("dashdash")
+const path = require("path")
+const fs = require("fs-extra")
 const Compose = require("./lib/compose")
+const Environment = require("./lib/environment")
 
 class Command {
   parseOptions() {
@@ -10,6 +13,12 @@ class Command {
         names: ["help", "h"],
         type: "bool",
         help: "Print this help and exit.",
+      },
+      {
+        names: ["defaults", "d"],
+        type: "string",
+        help: "A json file containing the default environment variables",
+        default: "./defaults.json",
       },
     ]
 
@@ -27,12 +36,20 @@ class Command {
   run() {
     const opts = this.parseOptions()
     this.compose(opts)
+    this.environment(opts)
   }
 
   compose() {
-    const services = ["meshblu-core-dispatcher"]
+    const services = ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"]
     const compose = new Compose({ services })
-    console.log(compose.toJSON())
+    console.log(JSON.stringify(compose.toJSON(), null, 2))
+  }
+
+  environment({ defaults }) {
+    const values = fs.readJSONSync(path.resolve(defaults))
+    const services = ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"]
+    const environment = new Environment({ services, values })
+    console.log(JSON.stringify(environment.toJSON(), null, 2))
   }
 }
 

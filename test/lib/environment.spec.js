@@ -27,6 +27,7 @@ describe("Environment", function() {
       })
     })
   })
+
   context("when generating two services", function() {
     beforeEach("create environment", function() {
       const values = {
@@ -54,6 +55,17 @@ describe("Environment", function() {
           REDIS_URI: "redis://localhost",
         },
       })
+    })
+  })
+  context("when missing a required env value", function() {
+    beforeEach("create environment", function() {
+      this.sut = new Environment({ services: ["meshblu-core-dispatcher"], values: {} })
+    })
+
+    it("should output json", function() {
+      expect(() => {
+        this.sut.toJSON()
+      }).to.throw(ReferenceError, "MONGODB_URI is not defined")
     })
   })
 })

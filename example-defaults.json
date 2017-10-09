@@ -1,3 +1,7 @@
 {
-  "MONGODB_URI": "mongodb://localhost:27017/octoblu-test"
+  "MONGODB_URI": "mongodb://localhost:27017/octoblu-test",
+  "MESHBLU_PRIVATE_KEY_BASE64": "123123asdfasdf124",
+  "MESHBLU_PUBLIC_KEY_BASE64": "123123123143535",
+  "REDIS_URI": "redis://localhost:6789",
+  "MESHBLU_CORE_TOKEN": "asdasdofijoidj"
 }

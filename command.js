@@ -20,7 +20,7 @@ class Command {
         help: "Generate defaults json file",
       },
       {
-        names: ["defaults", "d"],
+        names: ["defaults-file", "d"],
         type: "string",
         completionType: "filename",
         help: "A json file containing the default environment variables",
@@ -47,14 +47,14 @@ class Command {
 
   run() {
     const opts = this.parseOptions()
-    if (opts.init) return this.init()
+    if (opts.init) return this.init(opts)
     this.compose(opts)
     this.environment(opts)
   }
 
-  init({ services }) {
+  init({ services, defaults_file }) {
     const environment = new Environment({ services })
-    return fs.writeJSONSync(path.resolve("./defaults.json"), environment.defaults())
+    return fs.writeJSONSync(path.resolve(defaults_file), environment.defaults(), { spaces: 2 })
   }
 
   compose({ services }) {
@@ -62,8 +62,8 @@ class Command {
     console.log(JSON.stringify(compose.toJSON(), null, 2))
   }
 
-  environment({ services, defaults }) {
-    const values = fs.readJSONSync(path.resolve(defaults))
+  environment({ services, defaults_file }) {
+    const values = fs.readJSONSync(path.resolve(defaults_file))
     const environment = new Environment({ services, values })
     console.log(JSON.stringify(environment.toJSON(), null, 2))
   }

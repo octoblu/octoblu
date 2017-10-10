@@ -3,8 +3,10 @@
 const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
+const each = require("lodash/each")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
+const { jsonToEnv } = require("./lib/helpers/environment-helper")
 
 class Command {
   parseOptions() {
@@ -74,10 +76,14 @@ class Command {
     fs.writeFileSync(path.join(outputDirectory, "docker-compose.yml"), compose.toYAML())
   }
 
-  environment({ services, defaultsFilePath }) {
+  environment({ services, defaultsFilePath, outputDirectory }) {
     const values = fs.readJSONSync(defaultsFilePath)
     const environment = new Environment({ services, values })
-    console.log(JSON.stringify(environment.toJSON(), null, 2))
+    const envDir = path.join(outputDirectory, "env.d")
+    fs.ensureDirSync(envDir)
+    each(environment.toJSON(), (serviceEnv, serviceName) => {
+      fs.writeFileSync(path.join(envDir, serviceName + ".env"), jsonToEnv(serviceEnv))
+    })
   }
 }
 

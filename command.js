@@ -69,9 +69,9 @@ class Command {
     return fs.writeJSONSync(defaultsFilePath, environment.defaults(), { spaces: 2 })
   }
 
-  compose({ services }) {
+  compose({ services, outputDirectory }) {
     const compose = new Compose({ services })
-    console.log(JSON.stringify(compose.toJSON(), null, 2))
+    fs.writeFileSync(path.join(outputDirectory, "docker-compose.yml"), compose.toYAML())
   }
 
   environment({ services, defaultsFilePath }) {

@@ -1,0 +1,8 @@
+{
+  "image": "test/worker:latest",
+  "env_file": "./env.d/testworker.env",
+  "deploy": {
+    "replicas": 2
+  },
+  "networks": ["test"]
+}

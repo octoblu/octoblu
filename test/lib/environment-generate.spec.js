@@ -1,28 +1,27 @@
 const { beforeEach, it, expect } = global
 const Environment = require("../../lib/environment")
+const path = require("path")
 
 describe("Generate Environment", function() {
+  beforeEach("setup templatesDir", function() {
+    this.templatesDir = path.join(__dirname, "../fixtures/templates")
+  })
+
   context("when generating a single service", function() {
     beforeEach("create environment", function() {
       const values = {
-        MESHBLU_CORE_TOKEN: "meshblu-pepper",
-        MESHBLU_PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-        MESHBLU_PUBLIC_KEY_BASE64: "meshblu-public-key-base64",
-        MONGODB_URI: "mongodb://localhost",
-        REDIS_URI: "redis://localhost",
+        TESTPATCHER_URI: "some-testpatcher-uri",
+        TEST_PATCHER_TOKEN: "some-testpatcher-token",
       }
-      this.sut = new Environment({ services: ["meshblu-core-dispatcher"], values })
+      this.sut = new Environment({ services: ["testpatcher"], values, templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
       const data = this.sut.toJSON()
       expect(data).to.deep.equal({
-        "meshblu-core-dispatcher": {
-          MONGODB_URI: "mongodb://localhost",
-          PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-          PUBLIC_KEY_BASE64: "meshblu-public-key-base64",
-          REDIS_URI: "redis://localhost",
-          TOKEN: "meshblu-pepper",
+        testpatcher: {
+          TOKEN: "some-testpatcher-token",
+          TESTPATCHER_URI: "some-testpatcher-uri",
         },
       })
     })
@@ -31,41 +30,35 @@ describe("Generate Environment", function() {
   context("when generating two services", function() {
     beforeEach("create environment", function() {
       const values = {
-        MESHBLU_CORE_TOKEN: "meshblu-pepper",
-        MESHBLU_PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-        MESHBLU_PUBLIC_KEY_BASE64: "meshblu-public-key-base64",
-        MONGODB_URI: "mongodb://localhost",
-        REDIS_URI: "redis://localhost",
+        TESTPATCHER_URI: "some-testpatcher-uri",
+        TEST_PATCHER_TOKEN: "some-testpatcher-token",
+        TEST_PRIVATE_VAR: "some-private-var",
       }
-      this.sut = new Environment({ services: ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"], values })
+      this.sut = new Environment({ services: ["testpatcher", "testworker"], values, templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
       const data = this.sut.toJSON()
       expect(data).to.deep.equal({
-        "meshblu-core-dispatcher": {
-          MONGODB_URI: "mongodb://localhost",
-          PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-          PUBLIC_KEY_BASE64: "meshblu-public-key-base64",
-          REDIS_URI: "redis://localhost",
-          TOKEN: "meshblu-pepper",
+        testpatcher: {
+          TOKEN: "some-testpatcher-token",
+          TESTPATCHER_URI: "some-testpatcher-uri",
         },
-        "meshblu-core-worker-webhook": {
-          PRIVATE_KEY_BASE64: "meshblu-private-key-base64",
-          REDIS_URI: "redis://localhost",
+        testworker: {
+          TESTWORKER_PRIVATE: "some-private-var",
         },
       })
     })
   })
   context("when missing a required env value", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["meshblu-core-dispatcher"], values: {} })
+      this.sut = new Environment({ services: ["testpatcher"], values: {}, templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
       expect(() => {
         this.sut.toJSON()
-      }).to.throw(ReferenceError, "MONGODB_URI is not defined")
+      }).to.throw(ReferenceError, "TESTPATCHER_URI is not defined")
     })
   })
 })

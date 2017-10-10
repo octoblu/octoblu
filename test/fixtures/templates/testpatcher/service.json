@@ -1,0 +1,8 @@
+{
+  "image": "test/patcher:latest",
+  "env_file": "./env.d/testpatcher.env",
+  "deploy": {
+    "replicas": 2
+  },
+  "networks": ["test"]
+}

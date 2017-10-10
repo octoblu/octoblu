@@ -1,11 +1,16 @@
 const { beforeEach, it, expect } = global
+const path = require("path")
 const yaml = require("node-yaml")
 const Compose = require("../../lib/compose")
 
 describe("Compose", function() {
+  beforeEach("setup templatesDir", function() {
+    this.templatesDir = path.join(__dirname, "../fixtures/templates")
+  })
+
   context("when generating a single service", function() {
     beforeEach("create compose", function() {
-      this.sut = new Compose({ services: ["meshblu-core-dispatcher"] })
+      this.sut = new Compose({ services: ["testpatcher"], templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
@@ -13,13 +18,13 @@ describe("Compose", function() {
       expect(data).to.deep.equal({
         version: "3",
         services: {
-          "meshblu-core-dispatcher": {
-            image: "octoblu/meshblu-core-dispatcher:latest",
-            env_file: "./env.d/meshblu-core-dispatcher.env",
+          testpatcher: {
+            image: "test/patcher:latest",
+            env_file: "./env.d/testpatcher.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
         },
       })
@@ -29,13 +34,13 @@ describe("Compose", function() {
       expect(yaml.parse(data)).to.deep.equal({
         version: "3",
         services: {
-          "meshblu-core-dispatcher": {
-            image: "octoblu/meshblu-core-dispatcher:latest",
-            env_file: "./env.d/meshblu-core-dispatcher.env",
+          testpatcher: {
+            image: "test/patcher:latest",
+            env_file: "./env.d/testpatcher.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
         },
       })
@@ -44,7 +49,7 @@ describe("Compose", function() {
 
   context("when generating two services", function() {
     beforeEach("create compose", function() {
-      this.sut = new Compose({ services: ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"] })
+      this.sut = new Compose({ services: ["testpatcher", "testworker"], templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
@@ -52,21 +57,21 @@ describe("Compose", function() {
       expect(data).to.deep.equal({
         version: "3",
         services: {
-          "meshblu-core-dispatcher": {
-            image: "octoblu/meshblu-core-dispatcher:latest",
-            env_file: "./env.d/meshblu-core-dispatcher.env",
+          testpatcher: {
+            image: "test/patcher:latest",
+            env_file: "./env.d/testpatcher.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
-          "meshblu-core-worker-webhook": {
-            image: "octoblu/meshblu-core-worker-webhook:latest",
-            env_file: "./env.d/meshblu-core-worker-webhook.env",
+          testworker: {
+            image: "test/worker:latest",
+            env_file: "./env.d/testworker.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
         },
       })
@@ -76,21 +81,21 @@ describe("Compose", function() {
       expect(yaml.parse(data)).to.deep.equal({
         version: "3",
         services: {
-          "meshblu-core-dispatcher": {
-            image: "octoblu/meshblu-core-dispatcher:latest",
-            env_file: "./env.d/meshblu-core-dispatcher.env",
+          testpatcher: {
+            image: "test/patcher:latest",
+            env_file: "./env.d/testpatcher.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
-          "meshblu-core-worker-webhook": {
-            image: "octoblu/meshblu-core-worker-webhook:latest",
-            env_file: "./env.d/meshblu-core-worker-webhook.env",
+          testworker: {
+            image: "test/worker:latest",
+            env_file: "./env.d/testworker.env",
             deploy: {
               replicas: 2,
             },
-            networks: ["meshblu"],
+            networks: ["test"],
           },
         },
       })
@@ -99,7 +104,7 @@ describe("Compose", function() {
 
   context("when the service does not exist", function() {
     beforeEach("create compose", function() {
-      this.sut = new Compose({ services: ["nope"] })
+      this.sut = new Compose({ services: ["nope"], templatesDir: this.templatesDir })
     })
 
     describe("when calling toJSON", function() {

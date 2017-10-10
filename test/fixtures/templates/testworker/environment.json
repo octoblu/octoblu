@@ -1,0 +1,3 @@
+{
+  "TESTWORKER_PRIVATE": "{{TEST_PRIVATE_VAR}}"
+}

@@ -1,34 +1,36 @@
 const { beforeEach, it, expect } = global
 const Environment = require("../../lib/environment")
+const path = require("path")
 
 describe("Environment Defaults", function() {
+  beforeEach("setup templatesDir", function() {
+    this.templatesDir = path.join(__dirname, "../fixtures/templates")
+  })
+
   context("when getting the defaults for a single service", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["meshblu-core-worker-webhook"] })
+      this.sut = new Environment({ services: ["testworker"], templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
       const data = this.sut.defaults()
       expect(data).to.deep.equal({
-        MESHBLU_PRIVATE_KEY_BASE64: "",
-        REDIS_URI: "",
+        TEST_PRIVATE_VAR: "",
       })
     })
   })
 
   context("when getting the defaults for a multiple services", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"] })
+      this.sut = new Environment({ services: ["testpatcher", "testworker"], templatesDir: this.templatesDir })
     })
 
     it("should output json", function() {
       const data = this.sut.defaults()
       expect(data).to.deep.equal({
-        MONGODB_URI: "",
-        MESHBLU_PRIVATE_KEY_BASE64: "",
-        MESHBLU_PUBLIC_KEY_BASE64: "",
-        REDIS_URI: "",
-        MESHBLU_CORE_TOKEN: "",
+        TEST_PATCHER_TOKEN: "",
+        TEST_PRIVATE_VAR: "",
+        TESTPATCHER_URI: "",
       })
     })
   })

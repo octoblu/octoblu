@@ -1,0 +1,7 @@
+{
+  "image": "octoblu/nanocyte-engine-worker:latest",
+  "env_file": "./env.d/nanocyte-engine-worker.env",
+  "deploy": {
+    "replicas": 1
+  }
+}

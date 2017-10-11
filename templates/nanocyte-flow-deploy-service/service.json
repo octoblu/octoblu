@@ -1,0 +1,8 @@
+{
+  "image": "octoblu/nanocyte-flow-deploy-service:latest",
+  "env_file": "./env.d/nanocyte-flow-deploy-service.env",
+  "deploy": {
+    "replicas": 1
+  },
+  "networks": ["http"]
+}

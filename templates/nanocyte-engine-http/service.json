@@ -1,0 +1,8 @@
+{
+  "image": "octoblu/nanocyte-engine-http:latest",
+  "env_file": "./env.d/nanocyte-engine-http.env",
+  "deploy": {
+    "replicas": 1
+  },
+  "networks": ["http"]
+}

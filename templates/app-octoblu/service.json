@@ -2,7 +2,7 @@
   "image": "octoblu/app-octoblu:latest",
   "env_file": "./env.d/app-octoblu.env",
   "deploy": {
-    "replicas": 2
+    "replicas": 1
   },
   "networks": ["http"]
 }

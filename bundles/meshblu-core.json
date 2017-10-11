@@ -1,3 +1,6 @@
 {
-  "services": ["meshblu-core-dispatcher", "meshblu-core-worker-webhook"]
+  "services": [
+    "meshblu-core-dispatcher",
+    "meshblu-core-worker-webhook"
+  ]
 }

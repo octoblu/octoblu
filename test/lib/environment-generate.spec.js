@@ -27,6 +27,21 @@ describe("Generate Environment", function() {
     })
   })
 
+  context("when getting the service contains a non-templated env", function() {
+    beforeEach("create environment", function() {
+      this.sut = new Environment({ services: ["testoddcase"], templatesDir: this.templatesDir })
+    })
+
+    it("should output json", function() {
+      const data = this.sut.toJSON()
+      expect(data).to.deep.equal({
+        testoddcase: {
+          TEST_ODD_CASE: "works",
+        },
+      })
+    })
+  })
+
   context("when generating two services", function() {
     beforeEach("create environment", function() {
       const values = {

@@ -1,0 +1,8 @@
+{
+  "image": "test/oddcase:latest",
+  "env_file": "./env.d/testoddcase.env",
+  "deploy": {
+    "replicas": 2
+  },
+  "networks": ["test"]
+}

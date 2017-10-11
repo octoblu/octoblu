@@ -80,7 +80,7 @@ class Command {
     const defaultsFilePath = defaults_file ? path.resolve(defaults_file) : path.join(outputDirectory, "defaults.json")
     const bundle = new Bundle({ bundles, bundlesDir })
     const services = bundle.toJSON()
-    if (init) return this.init({ outputDirectory, init, defaultsFilePath, services })
+    if (init) return this.init({ outputDirectory, init, defaultsFilePath, services, templatesDir })
     this.compose({ services, outputDirectory, templatesDir })
     this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
   }

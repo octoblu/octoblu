@@ -20,6 +20,19 @@ describe("Environment Defaults", function() {
     })
   })
 
+  context("when getting the service contains a non-templated env", function() {
+    beforeEach("create environment", function() {
+      this.sut = new Environment({ services: ["testoddcase"], templatesDir: this.templatesDir })
+    })
+
+    it("should output json", function() {
+      const data = this.sut.defaults()
+      expect(data).to.deep.equal({
+        TEST_ODD_CASE: "works",
+      })
+    })
+  })
+
   context("when getting the defaults for a multiple services", function() {
     beforeEach("create environment", function() {
       this.sut = new Environment({ services: ["testpatcher", "testworker"], templatesDir: this.templatesDir })

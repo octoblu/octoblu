@@ -1,0 +1,12 @@
+{
+  "bundles": [
+    "connector-factory",
+    "flows",
+    "meshblu-firehose",
+    "meshblu-http"
+  ],
+  "services": [
+    "api-octoblu",
+    "app-octoblu"
+  ]
+}

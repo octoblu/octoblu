@@ -2,7 +2,7 @@
 
 const dashdash = require("dashdash")
 const path = require("path")
-const fs = require("fs")
+const fs = require("fs-extra")
 const parseEnv = require("./lib/helpers/parse-env-file")
 
 class Command {
@@ -49,7 +49,7 @@ class Command {
     const input = fs.readFileSync(inputFilePath, "utf8")
     const output = this.convert(input)
     if (outputFilePath) {
-      fs.writeFileSync(outputFilePath, output)
+      fs.writeJSONSync(outputFilePath, output)
     } else {
       console.log(JSON.stringify(output, null, 2))
     }

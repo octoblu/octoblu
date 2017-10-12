@@ -1,0 +1,17 @@
+version: '3'
+
+networks:
+  traefik:
+services:
+  meshblu-core-protocol-adapter-http:
+    image: "octoblu/meshblu-core-protocol-adapter-http:latest"
+    env_file: "./env.d/meshblu-core-protocol-adapter-http.env"
+    deploy:
+      replicas: 2
+    networks:
+      - traefik
+volumes:
+  dependencies:
+    labels:
+      - './meshblu-core.yml'
+      - './traefik.yml'

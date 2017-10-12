@@ -1,0 +1,20 @@
+version: '3'
+
+networks:
+  traefik:
+services:
+  traefik:
+    command: traefik --docker --docker.swarmmode --docker.watch --web
+    deploy:
+      mode: global
+      placement:
+        constraints:
+        - node.labels.manager == true
+    image: containous/traefik:v1.2.0
+    networks:
+    - traefik
+    ports:
+    - 80:80
+    - 8080:8080
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock

@@ -4,7 +4,8 @@
   "description": "Generate docker-compose.yml to run octoblu",
   "main": "command.js",
   "bin": {
-    "octoblu-stack-generator": "./command.js"
+    "octoblu-stack-generator": "./command.js",
+    "env-to-json": "./env-to-json.js"
   },
   "scripts": {
     "test": "mocha",
@@ -14,9 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/octoblu/octoblu.git"
   },
-  "keywords": [
-    "octoblu"
-  ],
+  "keywords": ["octoblu"],
   "author": "Octoblu <npm@octoblu.com>",
   "license": "MIT",
   "bugs": {

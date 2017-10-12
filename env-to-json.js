@@ -49,6 +49,8 @@ class Command {
     const input = fs.readFileSync(inputFilePath, "utf8")
     const output = this.convert(input)
     if (outputFilePath) {
+      const dirname = path.dirname(outputFilePath)
+      fs.ensureDirSync(dirname)
       fs.writeJSONSync(outputFilePath, output)
     } else {
       console.log(JSON.stringify(output, null, 2))

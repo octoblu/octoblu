@@ -1,0 +1,4 @@
+{
+  "AMQP_URI": "{{MESHBLU_AMPQ_URI}}",
+  "REDIS_URI": "{{REDIS_URI}}"
+}

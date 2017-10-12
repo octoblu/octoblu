@@ -1,0 +1,4 @@
+{
+  "PASSWORD": "{{MESHBLU_AMQP_PASSWORD}}",
+  "REDIS_URI": "{{REDIS_URI}}"
+}

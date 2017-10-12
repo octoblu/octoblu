@@ -1,15 +1,8 @@
 {
-  "DEBUG": "nothing",
-  "JOB_LOG_QUEUE": "sample-rate:1.00",
-  "JOB_LOG_REDIS_URI": "redis://redis.localhost",
-  "JOB_LOG_SAMPLE_RATE": "0.001",
-  "MESHBLU_HOSTNAME": "meshblu-http.localhost",
-  "MESHBLU_PORT": "80",
-  "MESHBLU_PROTOCOL": "http",
-  "MONGODB_URI": "mongodb://mongo.localhost",
-  "NANOCYTE_ENGINE_REQUEST_MEMORY_LIMIT": "800",
-  "NANOCYTE_ENGINE_WORKER_CONCURRENCY": "1",
+  "MESHBLU_HOST": "{{MESHBLU_HOST}}",
+  "MESHBLU_PORT": "{{MESHBLU_PORT}}",
+  "MESHBLU_PROTOCOL": "{{MESHBLU_PROTOCOL}}",
+  "MONGODB_URI": "{{MONGODB_URI}}",
   "NODE_ENV": "production",
-  "REDIS_URI": "redis://redis.localhost",
-  "SENTRY_DSN": ""
+  "REDIS_URI": "{{REDIS_URI}}"
 }

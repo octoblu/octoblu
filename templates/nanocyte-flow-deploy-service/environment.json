@@ -1,12 +1,8 @@
 {
-  "DEBUG": "nothing-at-all",
-  "DISABLE_LOGGING": "true",
-  "MESHBLU_HOST": "meshblu-http.localhost",
-  "MESHBLU_PORT": "80",
-  "MESHBLU_PROTOCOL": "http",
-  "MESHBLU_PUBLIC_KEY_URI": "http://meshblu-http.localhost/publickey",
+  "MESHBLU_HOST": "{{MESHBLU_HOST}}",
+  "MESHBLU_PORT": "{{MESHBLU_PORT}}",
+  "MESHBLU_PROTOCOL": "{{MESHBLU_PROTOCOL}}",
+  "MESHBLU_PUBLIC_KEY_URI": "{{MESHBLU_PUBLIC_KEY_URI}}",
   "NODE_ENV": "production",
-  "REDIS_URI": "redis://redis.localhost",
-  "RESTART_NOW": "fo real",
-  "SENTRY_DSN": ""
+  "REDIS_URI": "{{REDIS_URI}}"
 }

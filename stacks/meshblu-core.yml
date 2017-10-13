@@ -10,4 +10,4 @@ services:
     image: "octoblu/meshblu-core-worker-webhook:latest"
     env_file: "./env.d/meshblu-core-worker-webhook.env"
     deploy:
-      replicas": 2
+      replicas: 2

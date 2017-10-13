@@ -81,7 +81,8 @@ class Command {
     const outputDirectory = path.resolve(output)
     const defaultsFilePath = defaults_file ? path.resolve(defaults_file) : path.join(outputDirectory, "defaults.json")
 
-    const stackPaths = map(filePath => `${path.join(stacks_dir, filePath)}.yml`, stacks)
+    const absoluteStacksDir = path.isAbsolute(stacks_dir) ? stacks_dir : path.join(process.cwd(), stacks_dir)
+    const stackPaths = map(filePath => `${path.join(absoluteStacksDir, filePath)}.yml`, stacks)
     const compose = Compose.fromYAMLFilesSync(stackPaths)
     const services = keys(compose.toObject().services)
 

@@ -4,6 +4,7 @@ const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
 const each = require("lodash/fp/each")
+const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
@@ -76,20 +77,18 @@ class Command {
       process.exit(1)
     }
 
-    // const templatesDir = templates_dir
+    const templatesDir = templates_dir
     const outputDirectory = path.resolve(output)
-    // const defaultsFilePath = defaults_file ? path.resolve(defaults_file) : path.join(outputDirectory, "defaults.json")
+    const defaultsFilePath = defaults_file ? path.resolve(defaults_file) : path.join(outputDirectory, "defaults.json")
 
     const stackPaths = map(filePath => `${path.join(stacks_dir, filePath)}.yml`, stacks)
     const compose = Compose.fromYAMLFilesSync(stackPaths)
-    compose.toYAMLFileSync(path.join(outputDirectory, 'docker-compose.yml'))
-    // const bundle = new Bundle({ bundles, bundlesDir })
-    // const services = bundle.toJSON()
-    //
-    // if (init) return this.init({ outputDirectory, init, defaultsFilePath, services, templatesDir })
+    const services = keys(compose.toObject().services)
 
-    // this.compose({ services, outputDirectory, templatesDir })
-    // this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
+    if (init) return this.init({ outputDirectory, init, defaultsFilePath, services, templatesDir })
+
+    compose.toYAMLFileSync(path.join(outputDirectory, 'docker-compose.yml'))
+    this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
   }
 
   init({ services, defaultsFilePath, templatesDir }) {

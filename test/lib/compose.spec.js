@@ -75,13 +75,48 @@ describe('Compose', () => {
     })
   })
 
+  describe('.fromYAMLFilesSync', () => {
+    describe('with two filenames', () => {
+      beforeEach(() => {
+        t.dirName = tmp.dirSync().name
+        const filename = path.join(t.dirName, 'docker-compose.yml')
+        const otherFilename = path.join(t.dirName, 'other-compose.yml')
+
+        fs.writeFileSync(filename, `
+          services:
+            foo:
+        `)
+
+        fs.writeFileSync(otherFilename, `
+          services:
+            bar:
+        `)
+
+        t.sut = Compose.fromYAMLFilesSync([filename, otherFilename])
+      })
+
+      it('should generate a compose instance', () => {
+        expect(t.sut).to.exist
+      })
+
+      it('should be able to resolve the dependent services', () => {
+        expect(t.sut.toObject()).to.deep.equal({
+          services: {
+            bar: null,
+            foo: null,
+          },
+        })
+      })
+    })
+  })
+
   describe('->toYAMLFile', () => {
     describe('with no dependencies', () => {
       beforeEach(() => {
         t.dirName = tmp.dirSync().name
 
         t.sut = new Compose({
-          filePath: path.join(t.dirName, 'docker-compose.yml'),
+          filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             services: {
               foo: {},
@@ -116,7 +151,7 @@ describe('Compose', () => {
         `)
 
         t.sut = new Compose({
-          filePath: path.join(t.dirName, 'docker-compose.yml'),
+          filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             volumes: {
               dependencies: {
@@ -144,6 +179,53 @@ describe('Compose', () => {
       })
     })
 
+    describe('with dependencies with an absolute path', () => {
+      beforeEach(() => {
+        t.dirName = tmp.dirSync().name
+        const filename = path.join(t.dirName, 'other-compose.yml')
+
+        fs.writeFileSync(filename, `
+          networks:
+            bar:
+          services:
+            foo:
+          volumes:
+            bacon:
+        `)
+
+        t.sut = new Compose({
+          filename: path.join(t.dirName, 'docker-compose.yml'),
+          data: {
+            services: {
+              bar: null,
+            },
+            volumes: {
+              dependencies: {
+                labels:  [filename],
+              },
+            },
+          },
+        })
+      })
+
+      it('should generate some yaml', () => {
+        const filename = path.join(t.dirName, 'output.yml')
+        t.sut.toYAMLFileSync(filename)
+        expect(yaml.readSync(filename)).to.deep.equal({
+          networks: {
+            bar: null,
+          },
+          services: {
+            bar: null,
+            foo: null,
+          },
+          volumes: {
+            bacon: null,
+          },
+        })
+      })
+    })
+
     describe('with dependencies with conflicts', () => {
       beforeEach(() => {
         t.dirName = tmp.dirSync().name
@@ -159,7 +241,7 @@ describe('Compose', () => {
         `)
 
         t.sut = new Compose({
-          filePath: path.join(t.dirName, 'docker-compose.yml'),
+          filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             services: {
               foo: null
@@ -202,7 +284,7 @@ describe('Compose', () => {
         `)
 
         t.sut = new Compose({
-          filePath: path.join(t.dirName, 'docker-compose.yml'),
+          filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             volumes: {
               dependencies: {
@@ -253,7 +335,7 @@ describe('Compose', () => {
         `)
 
         t.sut = new Compose({
-          filePath: path.join(t.dirName, 'docker-compose.yml'),
+          filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             services: {
               foo: null,

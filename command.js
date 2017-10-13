@@ -3,8 +3,8 @@
 const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
-const each = require("lodash/each")
-const map = require("lodash/map")
+const each = require("lodash/fp/each")
+const map = require("lodash/fp/map")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
 // const Bundle = require("./lib/bundle")
@@ -44,7 +44,7 @@ class Command {
         names: ["stacks-dir"],
         type: "string",
         completionType: "filename",
-        help: "Bundles directory",
+        help: "Stacks directory",
         default: path.join(__dirname, "stacks"),
       },
       {
@@ -80,7 +80,7 @@ class Command {
     const outputDirectory = path.resolve(output)
     // const defaultsFilePath = defaults_file ? path.resolve(defaults_file) : path.join(outputDirectory, "defaults.json")
 
-    const stackPaths = map((filePath) => `${path.join(stacks_dir, filePath)}.yml`, stacks)
+    const stackPaths = map(filePath => `${path.join(stacks_dir, filePath)}.yml`, stacks)
     const compose = Compose.fromYAMLFilesSync(stackPaths)
     compose.toYAMLFileSync(path.join(outputDirectory, 'docker-compose.yml'))
     // const bundle = new Bundle({ bundles, bundlesDir })
@@ -107,9 +107,9 @@ class Command {
     const environment = new Environment({ services, values, templatesDir })
     const envDir = path.join(outputDirectory, "env.d")
     fs.ensureDirSync(envDir)
-    each(environment.toJSON(), (serviceEnv, serviceName) => {
+    each((serviceEnv, serviceName) => {
       fs.writeFileSync(path.join(envDir, serviceName + ".env"), jsonToEnv(serviceEnv))
-    })
+    }, environment.toJSON())
   }
 }
 

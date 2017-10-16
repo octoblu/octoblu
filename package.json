@@ -15,7 +15,9 @@
     "type": "git",
     "url": "git+https://github.com/octoblu/octoblu.git"
   },
-  "keywords": ["octoblu"],
+  "keywords": [
+    "octoblu"
+  ],
   "author": "Octoblu <npm@octoblu.com>",
   "license": "MIT",
   "bugs": {

@@ -24,6 +24,7 @@ services:
 volumes:
   dependencies:
     labels:
+      - './flows.yml'
       - './meshblu-http.yml'
       - './meshblu-firehose-socket.io.yml'
       - './traefik.yml'

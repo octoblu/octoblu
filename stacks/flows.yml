@@ -1,0 +1,33 @@
+version: '3.2'
+
+networks:
+  traefik:
+services:
+  nanocyte-engine-http:
+    image: "octoblu/nanocyte-engine-http:latest"
+    env_file: "./env.d/nanocyte-engine-http.env"
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=HostRegexp:nanocyte-engine.localhost
+        - traefik.frontend.entryPoints=http
+        - traefik.port=80
+  nanocyte-engine-worker:
+    image: "octoblu/nanocyte-engine-worker"
+    env_file: "./env.d/nanocyte-engine-worker.env"
+    deploy:
+      replicas: 1
+  nanocyte-flow-deploy-service:
+    image: "octoblu/nanocyte-flow-deploy-service:latest"
+    env_file: "./env.d/nanocyte-flow-deploy-service.env"
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy.localhost
+        - traefik.frontend.entryPoints=http
+        - traefik.port=80
+
+volumes:
+  dependencies:
+    labels:
+      - './traefik.yml'

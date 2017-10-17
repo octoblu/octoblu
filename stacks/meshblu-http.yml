@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 
 networks:
   traefik:
@@ -8,6 +8,10 @@ services:
     env_file: "./env.d/meshblu-core-protocol-adapter-http.env"
     deploy:
       replicas: 2
+      labels:
+        - traefik.frontend.rule=HostRegexp:meshblu-http.localhost
+        - traefik.frontend.entryPoints=http
+        - traefik.port=80
     networks:
       - traefik
 volumes:

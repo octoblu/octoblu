@@ -1,0 +1,29 @@
+version: '3.2'
+
+networks:
+  traefik:
+services:
+  api-octoblu:
+    image: "octoblu/api-octoblu:latest"
+    env_file: "./env.d/api-octoblu.env"
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=HostRegexp:api-octoblu.localhost
+        - traefik.frontend.entryPoints=http
+        - traefik.port=80
+  app-octoblu:
+    image: "octoblu/app-octoblu:latest"
+    env_file: "./env.d/app-octoblu.env"
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.frontend.rule=HostRegexp:app-octoblu.localhost
+        - traefik.frontend.entryPoints=http
+        - traefik.port=80
+volumes:
+  dependencies:
+    labels:
+      - './meshblu-http.yml'
+      - './meshblu-firehose-socket.io.yml'
+      - './traefik.yml'

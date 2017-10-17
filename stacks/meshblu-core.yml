@@ -5,9 +5,9 @@ services:
     image: "octoblu/meshblu-core-dispatcher:latest"
     env_file: "./env.d/meshblu-core-dispatcher.env"
     deploy:
-      replicas: 2
+      replicas: 1
   meshblu-core-worker-webhook:
     image: "octoblu/meshblu-core-worker-webhook:latest"
     env_file: "./env.d/meshblu-core-worker-webhook.env"
     deploy:
-      replicas: 2
+      replicas: 1

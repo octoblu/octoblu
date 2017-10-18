@@ -59,15 +59,9 @@ The result of running this should create the following files.
 
 ## Available Stacks
 
-- `api-octoblu`
+- `octoblu`
 - `flows`
 - `meshblu-core`
-- `octoblu`
-
-## ToDo
-
-* Copy all environment and service info from octoswarm
-* Add `latest` build to all services
-* Add sensible defaults to all services
-* Add example values to example-defaults.json
-* Allow --replicas option
+- `meshblu-firehose-socket.io`
+- `meshblu-http`
+- `traefik`

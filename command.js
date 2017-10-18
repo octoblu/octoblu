@@ -88,12 +88,20 @@ class Command {
 
     if (init) return this.init({ outputDirectory, init, defaultsFilePath, services, templatesDir })
 
+    if (!fs.existsSync(defaultsFilePath)) {
+      console.error(`Defaults file ${defaultsFilePath} not found.`)
+      console.error("Generate a defaults file by running this command with --init.")
+      process.exit(1)
+    }
     compose.toYAMLFileSync(path.join(outputDirectory, "docker-compose.yml"))
     this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
   }
 
-  init({ services, defaultsFilePath, templatesDir }) {
+  init({ services, outputDirectory, defaultsFilePath, templatesDir }) {
+    fs.ensureDirSync(outputDirectory)
     const environment = new Environment({ services, templatesDir })
+    console.log(`${defaultsFilePath} created`)
+    console.log("Add your defaults now and run again without --init")
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.defaults()))
       return
@@ -103,6 +111,7 @@ class Command {
 
   compose({ services, outputDirectory, templatesDir }) {
     const compose = new Compose({ services, templatesDir })
+    fs.ensureDirSync(outputDirectory)
     fs.writeFileSync(path.join(outputDirectory, "docker-compose.yml"), compose.toYAML())
   }
 

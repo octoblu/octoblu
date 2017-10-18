@@ -6,6 +6,8 @@ services:
     env_file: "./env.d/meshblu-core-firehose-socket.io.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
 volumes:
   dependencies:
     labels:

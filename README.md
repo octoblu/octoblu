@@ -18,7 +18,6 @@ npm install --global octoblu
 octoblu-stack-generator --help
 ```
 
-
 ### Initialize
 
 Generate the default environment file for the stack.
@@ -33,6 +32,19 @@ octoblu-stack-generator --init \
 The result of running this should create a `defaults.env` file in the output directory `./test-stack`.
 
 **NOTE:** This will override any existing defaults. Make sure to either run this in an empty project, or make sure you've committed and synced your changes in git.
+
+### Create a swarm
+```bash
+docker-machine create --driver virtualbox manager
+eval (docker-machine env manager)
+docker swarm init --advertise-addr eth1
+# copy the join command
+docker-machine create --driver virtualbox worker
+eval (docker-machine env worker)
+# paste the join command
+eval (docker-machine env manager)
+docker stack deploy -c docker-compose.yml octoblu
+```
 
 ### Generate a stack
 

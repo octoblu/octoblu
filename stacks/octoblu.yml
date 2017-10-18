@@ -8,6 +8,8 @@ services:
     env_file: "./env.d/api-octoblu.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
       labels:
         - traefik.frontend.rule=HostRegexp:api-octoblu.localhost
         - traefik.frontend.entryPoints=http
@@ -17,10 +19,13 @@ services:
     env_file: "./env.d/app-octoblu.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
       labels:
         - traefik.frontend.rule=HostRegexp:app-octoblu.localhost
         - traefik.frontend.entryPoints=http
         - traefik.port=80
+
 volumes:
   dependencies:
     labels:

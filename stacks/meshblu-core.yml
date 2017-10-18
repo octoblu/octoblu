@@ -6,8 +6,12 @@ services:
     env_file: "./env.d/meshblu-core-dispatcher.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
   meshblu-core-worker-webhook:
     image: "octoblu/meshblu-core-worker-webhook:latest"
     env_file: "./env.d/meshblu-core-worker-webhook.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]

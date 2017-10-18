@@ -8,6 +8,8 @@ services:
     env_file: "./env.d/nanocyte-engine-http.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-engine.localhost
         - traefik.frontend.entryPoints=http
@@ -17,11 +19,15 @@ services:
     env_file: "./env.d/nanocyte-engine-worker.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
   nanocyte-flow-deploy-service:
     image: "octoblu/nanocyte-flow-deploy-service:latest"
     env_file: "./env.d/nanocyte-flow-deploy-service.env"
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.role == worker]
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy.localhost
         - traefik.frontend.entryPoints=http

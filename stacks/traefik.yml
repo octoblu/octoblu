@@ -8,8 +8,7 @@ services:
     deploy:
       mode: global
       placement:
-        constraints:
-        - node.labels.manager == true
+        constraints: [node.role == manager]
     image: containous/traefik:v1.2.0
     networks:
     - traefik

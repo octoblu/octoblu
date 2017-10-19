@@ -6,10 +6,21 @@ services:
   api-octoblu:
     image: "octoblu/api-octoblu:latest"
     env_file: "./env.d/api-octoblu.env"
+    depends_on:
+      - meshblu-core-protocol-adapter-http
     deploy:
       replicas: 1
       placement:
         constraints: [node.role == worker]
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: rollback
+        monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:api-octoblu.localhost
         - traefik.frontend.entryPoints=http
@@ -17,10 +28,21 @@ services:
   app-octoblu:
     image: "octoblu/app-octoblu:latest"
     env_file: "./env.d/app-octoblu.env"
+    depends_on:
+      - api-octoblu
     deploy:
       replicas: 1
       placement:
         constraints: [node.role == worker]
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: rollback
+        monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:app-octoblu.localhost
         - traefik.frontend.entryPoints=http

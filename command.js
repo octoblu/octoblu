@@ -36,9 +36,9 @@ class Command {
         help: "Output directory for Octoblu stack files",
       },
       {
-        names: ["stacks", "s"],
+        names: ["stack", "s"],
         type: "arrayOfString",
-        help: "A list of docker stacks files to generate",
+        help: "The stack to run, to have multiple stacks use multiple --stack arguments",
         default: ["meshblu-core"],
       },
       {
@@ -69,7 +69,8 @@ class Command {
   }
 
   run() {
-    const { init, output, defaults, stacks, stacks_dir, templates_dir } = this.parseOptions()
+    const { init, output, defaults, stack, stacks_dir, templates_dir } = this.parseOptions()
+    const stacks = stack
     if (!output) {
       const help = this.parser.help({ includeEnv: true, includeDefaults: true }).trimRight()
       console.error("usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help)

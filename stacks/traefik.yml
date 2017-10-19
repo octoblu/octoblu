@@ -9,6 +9,15 @@ services:
       mode: global
       placement:
         constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: rollback
+        monitor: 1m
     image: containous/traefik:v1.2.0
     networks:
     - traefik

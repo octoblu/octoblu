@@ -6,8 +6,19 @@ services:
   meshblu-core-protocol-adapter-http:
     image: "octoblu/meshblu-core-protocol-adapter-http:latest"
     env_file: "./env.d/meshblu-core-protocol-adapter-http.env"
+    depends_on:
+      - meshblu-core-dispatcher
     deploy:
       replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: rollback
+        monitor: 1m
       placement:
         constraints: [node.role == worker]
       labels:

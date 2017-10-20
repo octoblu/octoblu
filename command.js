@@ -6,6 +6,7 @@ const fs = require("fs-extra")
 const each = require("lodash/each")
 const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
+const NodeRSA = require("node-rsa")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
 const parseEnv = require("./lib/helpers/parse-env-file")
@@ -29,6 +30,18 @@ class Command {
         type: "string",
         completionType: "filename",
         help: "A .json, or .env file containing the default environment variables",
+      },
+      {
+        names: ["private-key"],
+        type: "string",
+        completionType: "filename",
+        help: "Private Key PEM file (PKCS8)",
+      },
+      {
+        names: ["public-key"],
+        type: "string",
+        completionType: "filename",
+        help: "Public Key PEM file (PKCS8)",
       },
       {
         names: ["output", "o"],
@@ -69,8 +82,10 @@ class Command {
   }
 
   run() {
-    const { init, output, defaults, stack, stacks_dir, templates_dir } = this.parseOptions()
+    const { init, output, defaults, stack, stacks_dir, templates_dir, private_key, public_key } = this.parseOptions()
     const stacks = stack
+    const privateKey = private_key
+    const publicKey = public_key
     if (!output) {
       const help = this.parser.help({ includeEnv: true, includeDefaults: true }).trimRight()
       console.error("usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help)
@@ -81,13 +96,15 @@ class Command {
     const templatesDir = templates_dir
     const outputDirectory = path.resolve(output)
     const defaultsFilePath = defaults ? path.resolve(defaults) : path.join(outputDirectory, "defaults.env")
+    const privateKeyFilePath = privateKey ? path.resolve(privateKey) : path.join(outputDirectory, "privateKey.pem")
+    const publicKeyFilePath = publicKey ? path.resolve(publicKey) : path.join(outputDirectory, "publicKey.pem")
 
     const absoluteStacksDir = path.isAbsolute(stacks_dir) ? stacks_dir : path.join(process.cwd(), stacks_dir)
     const stackPaths = map(filePath => `${path.join(absoluteStacksDir, filePath)}.yml`, stacks)
     const compose = Compose.fromYAMLFilesSync(stackPaths)
     const services = keys(compose.toObject().services)
 
-    if (init) return this.init({ outputDirectory, init, defaultsFilePath, services, templatesDir })
+    if (init) return this.init({ outputDirectory, init, defaultsFilePath, publicKeyFilePath, privateKeyFilePath, services, templatesDir })
 
     if (!fs.existsSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
@@ -98,11 +115,23 @@ class Command {
     this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
   }
 
-  init({ services, outputDirectory, defaultsFilePath, templatesDir }) {
+  init({ services, outputDirectory, defaultsFilePath, privateKeyFilePath, publicKeyFilePath, templatesDir }) {
     fs.ensureDirSync(outputDirectory)
     const environment = new Environment({ services, templatesDir })
+    if (!fs.existsSync(privateKeyFilePath) && !fs.existsSync(publicKeyFilePath)) {
+      const key = new NodeRSA()
+      key.generateKeyPair(1024)
+      const privateKey = key.exportKey('private')
+      const publicKey = key.exportKey('public')
+      fs.writeFileSync(privateKeyFilePath, privateKey)
+      fs.writeFileSync(publicKeyFilePath, publicKey)
+    }
     console.log(`${defaultsFilePath} created`)
     console.log("Add your defaults now and run again without --init")
+    if (fs.existsSync(defaultsFilePath)) {
+      console.log("Defaults file already exists, skipping")
+      return
+    }
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.defaults()))
       return

@@ -123,8 +123,8 @@ class Command {
 
     const absoluteStacksDir = path.isAbsolute(stacks_dir) ? stacks_dir : path.join(process.cwd(), stacks_dir)
     const stackPaths = map(filePath => `${path.join(absoluteStacksDir, filePath)}.yml`, stacks)
-    const compose = Compose.fromYAMLFilesSync(stackPaths)
-    const services = keys(compose.toObject({ stripConstraints: no_constraints }).services)
+    const compose = Compose.fromYAMLFilesSync(stackPaths, { stripConstraints: no_constraints })
+    const services = keys(compose.toObject().services)
 
     if (init)
       return this.init({

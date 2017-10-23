@@ -9,6 +9,7 @@ const map = require("lodash/fp/map")
 const NodeRSA = require("node-rsa")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
+const Bootstrap = require("./lib/bootstrap")
 const parseEnv = require("./lib/helpers/parse-env-file")
 const { jsonToEnv } = require("./lib/helpers/environment-helper")
 
@@ -24,6 +25,11 @@ class Command {
         names: ["init"],
         type: "bool",
         help: "Generate defaults json file",
+      },
+      {
+        names: ["bootstrap", "b"],
+        type: "bool",
+        help: "Generate application devices and environment",
       },
       {
         names: ["defaults", "d"],
@@ -82,7 +88,17 @@ class Command {
   }
 
   run() {
-    const { init, output, defaults, stack, stacks_dir, templates_dir, private_key, public_key } = this.parseOptions()
+    const {
+      init,
+      bootstrap,
+      output,
+      defaults,
+      stack,
+      stacks_dir,
+      templates_dir,
+      private_key,
+      public_key,
+    } = this.parseOptions()
     const stacks = stack
     const privateKey = private_key
     const publicKey = public_key
@@ -104,7 +120,26 @@ class Command {
     const compose = Compose.fromYAMLFilesSync(stackPaths)
     const services = keys(compose.toObject().services)
 
-    if (init) return this.init({ outputDirectory, init, defaultsFilePath, publicKeyFilePath, privateKeyFilePath, services, templatesDir })
+    if (init)
+      return this.init({
+        outputDirectory,
+        init,
+        defaultsFilePath,
+        publicKeyFilePath,
+        privateKeyFilePath,
+        services,
+        templatesDir,
+      })
+    if (bootstrap)
+      return this.bootstrap({
+        outputDirectory,
+        init,
+        defaultsFilePath,
+        publicKeyFilePath,
+        privateKeyFilePath,
+        services,
+        templatesDir,
+      })
 
     if (!fs.existsSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
@@ -121,8 +156,8 @@ class Command {
     if (!fs.existsSync(privateKeyFilePath) && !fs.existsSync(publicKeyFilePath)) {
       const key = new NodeRSA()
       key.generateKeyPair(1024)
-      const privateKey = key.exportKey('private')
-      const publicKey = key.exportKey('public')
+      const privateKey = key.exportKey("private")
+      const publicKey = key.exportKey("public")
       fs.writeFileSync(privateKeyFilePath, privateKey)
       fs.writeFileSync(publicKeyFilePath, publicKey)
     }
@@ -137,6 +172,18 @@ class Command {
       return
     }
     fs.writeJSONSync(defaultsFilePath, environment.defaults(), { spaces: 2 })
+  }
+
+  async bootstrap({ services, defaultsFilePath, templatesDir }) {
+    let env
+    if (path.extname(defaultsFilePath) === ".env") {
+      env = parseEnv(fs.readFileSync(defaultsFilePath, "utf8"))
+    } else {
+      env = fs.readJSONSync(defaultsFilePath)
+    }
+    const bootstrap = new Bootstrap({ services, templatesDir, env })
+    const result = await bootstrap.run()
+    console.log(result)
   }
 
   compose({ services, outputDirectory, templatesDir }) {

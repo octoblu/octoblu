@@ -146,8 +146,9 @@ describe('Compose', () => {
             bar:
           services:
             foo:
-              placement:
-                constraints: [node.role == worker]
+              deploy:
+                placement:
+                  constraints: [node.role == worker]
           volumes:
             bacon:
         `)
@@ -173,10 +174,12 @@ describe('Compose', () => {
           },
           services: {
             foo: {
-              placement: {
-                constraints: [
-                  'node.role == worker',
-                ],
+              deploy: {
+                placement: {
+                  constraints: [
+                    'node.role == worker',
+                  ],
+                },
               },
             },
           },
@@ -197,8 +200,9 @@ describe('Compose', () => {
             bar:
           services:
             foo:
-              placement:
-                constraints: [node.role == worker]
+              deploy:
+                placement:
+                  constraints: [node.role == worker]
           volumes:
             bacon:
         `)
@@ -224,7 +228,9 @@ describe('Compose', () => {
           },
           services: {
             foo: {
-              placement: {},
+              deploy: {
+                placement: {},
+              }
             },
           },
           volumes: {

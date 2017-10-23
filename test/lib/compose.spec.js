@@ -209,6 +209,7 @@ describe('Compose', () => {
 
         t.sut = new Compose({
           filename: path.join(t.dirName, 'docker-compose.yml'),
+          stripConstraints: true,
           data: {
             volumes: {
               dependencies: {
@@ -221,7 +222,7 @@ describe('Compose', () => {
 
       it('should generate some yaml without the constraints', () => {
         const filename = path.join(t.dirName, 'output.yml')
-        t.sut.toYAMLFileSync(filename, { stripConstraints: true })
+        t.sut.toYAMLFileSync(filename)
         expect(yaml.readSync(filename)).to.deep.equal({
           networks: {
             bar: null,

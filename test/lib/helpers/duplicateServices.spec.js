@@ -12,12 +12,16 @@ describe('->duplicateServices', () => {
     it('should return an empty array', () => {
       const dependencies = [{
         services: {
-          foo: 1
+          foo: 1,
         },
       }, {
         services: {
-          foo: 1
+          foo: 1,
         },
+      }, {
+        services: {
+          bar: 3,
+        }
       }]
       expect(duplicateServices(dependencies)).to.deep.equal([])
     })

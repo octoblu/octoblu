@@ -146,6 +146,8 @@ describe('Compose', () => {
             bar:
           services:
             foo:
+              placement:
+                constraints: [node.role == worker]
           volumes:
             bacon:
         `)
@@ -170,7 +172,60 @@ describe('Compose', () => {
             bar: null,
           },
           services: {
-            foo: null,
+            foo: {
+              placement: {
+                constraints: [
+                  'node.role == worker',
+                ],
+              },
+            },
+          },
+          volumes: {
+            bacon: null,
+          },
+        })
+      })
+    })
+
+    describe('with stripConstraints', () => {
+      beforeEach(() => {
+        t.dirName = tmp.dirSync().name
+        const filename = path.join(t.dirName, 'other-compose.yml')
+
+        fs.writeFileSync(filename, `
+          networks:
+            bar:
+          services:
+            foo:
+              placement:
+                constraints: [node.role == worker]
+          volumes:
+            bacon:
+        `)
+
+        t.sut = new Compose({
+          filename: path.join(t.dirName, 'docker-compose.yml'),
+          data: {
+            volumes: {
+              dependencies: {
+                labels:  ['./other-compose.yml'],
+              },
+            },
+          },
+        })
+      })
+
+      it('should generate some yaml without the constraints', () => {
+        const filename = path.join(t.dirName, 'output.yml')
+        t.sut.toYAMLFileSync(filename, { stripConstraints: true })
+        expect(yaml.readSync(filename)).to.deep.equal({
+          networks: {
+            bar: null,
+          },
+          services: {
+            foo: {
+              placement: {},
+            },
           },
           volumes: {
             bacon: null,

@@ -50,6 +50,11 @@ class Command {
         help: "Public Key PEM file (PKCS8)",
       },
       {
+        names: ["no-constraints"],
+        type: "bool",
+        help: "Disable docker node.role constraints",
+      },
+      {
         names: ["output", "o"],
         type: "string",
         help: "Output directory for Octoblu stack files",
@@ -93,6 +98,7 @@ class Command {
       bootstrap,
       output,
       defaults,
+      no_constraints,
       stack,
       stacks_dir,
       templates_dir,
@@ -118,7 +124,7 @@ class Command {
     const absoluteStacksDir = path.isAbsolute(stacks_dir) ? stacks_dir : path.join(process.cwd(), stacks_dir)
     const stackPaths = map(filePath => `${path.join(absoluteStacksDir, filePath)}.yml`, stacks)
     const compose = Compose.fromYAMLFilesSync(stackPaths)
-    const services = keys(compose.toObject().services)
+    const services = keys(compose.toObject({ stripConstraints: no_constraints }).services)
 
     if (init)
       return this.init({

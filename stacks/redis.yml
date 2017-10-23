@@ -1,0 +1,13 @@
+version: '3.4'
+
+networks:
+  traefik:
+services:
+  redis:
+    image: redis
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    networks:
+      - traefik

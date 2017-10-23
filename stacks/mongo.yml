@@ -1,0 +1,15 @@
+version: '3.4'
+
+networks:
+  traefik:
+services:
+  mongo:
+    image: mongo
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    volumes:
+      - ./data/mongo-data:/data/db
+    networks:
+      - traefik

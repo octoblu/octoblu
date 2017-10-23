@@ -175,15 +175,20 @@ class Command {
   }
 
   async bootstrap({ services, defaultsFilePath, templatesDir }) {
-    let env
+    let existingDefaults
     if (path.extname(defaultsFilePath) === ".env") {
-      env = parseEnv(fs.readFileSync(defaultsFilePath, "utf8"))
+      existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath, "utf8"))
     } else {
-      env = fs.readJSONSync(defaultsFilePath)
+      existingDefaults = fs.readJSONSync(defaultsFilePath)
     }
-    const bootstrap = new Bootstrap({ services, templatesDir, env })
-    const result = await bootstrap.run()
-    console.log(result)
+    const bootstrap = new Bootstrap({ services, templatesDir, existingDefaults })
+    const results = await bootstrap.run()
+    if (path.extname(defaultsFilePath) === ".env") {
+      fs.writeFileSync(defaultsFilePath, jsonToEnv(results))
+    } else {
+      fs.writeJSONSync(defaultsFilePath, results, { spaces: 2 })
+    }
+    process.exit(0)
   }
 
   compose({ services, outputDirectory, templatesDir }) {

@@ -236,6 +236,7 @@ describe('Compose', () => {
             bar:
           services:
             foo:
+              port: 6
           volumes:
             bacon:
         `)
@@ -244,7 +245,9 @@ describe('Compose', () => {
           filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             services: {
-              foo: null
+              foo: {
+                port: 5,
+              }
             },
             volumes: {
               dependencies: {
@@ -322,7 +325,7 @@ describe('Compose', () => {
           networks:
             bar:
           services:
-            foo:
+            foo: 6
           volumes:
             bacon:
         `)
@@ -338,7 +341,7 @@ describe('Compose', () => {
           filename: path.join(t.dirName, 'docker-compose.yml'),
           data: {
             services: {
-              foo: null,
+              foo: 5,
             },
             volumes: {
               dependencies: {

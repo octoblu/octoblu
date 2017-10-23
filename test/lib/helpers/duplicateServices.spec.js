@@ -8,15 +8,30 @@ describe('->duplicateServices', () => {
     })
   })
 
-  describe('when called with a two dependencies that have a duplicate service', () => {
+  describe('when called with a two dependencies that have a duplicate, identical service', () => {
     it('should return an empty array', () => {
       const dependencies = [{
         services: {
-          foo: null
+          foo: 1
         },
       }, {
         services: {
-          foo: null
+          foo: 1
+        },
+      }]
+      expect(duplicateServices(dependencies)).to.deep.equal([])
+    })
+  })
+
+  describe('when called with a two dependencies that have a duplicate, non-identical service', () => {
+    it('should return an empty array', () => {
+      const dependencies = [{
+        services: {
+          foo: 1
+        },
+      }, {
+        services: {
+          foo: 2
         },
       }]
       expect(duplicateServices(dependencies)).to.deep.equal(['foo'])

@@ -132,7 +132,6 @@ class Command {
     if (fs.existsSync(defaultsFilePath)) {
       existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath))
     }
-    console.log({existingDefaults})
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.merge(existingDefaults)))
       return

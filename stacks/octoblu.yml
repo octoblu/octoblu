@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.4'
 
 networks:
   traefik:
@@ -25,6 +25,8 @@ services:
         - traefik.frontend.rule=HostRegexp:api-octoblu.localhost
         - traefik.frontend.entryPoints=http
         - traefik.port=80
+    networks:
+      - traefik
   app-octoblu:
     image: "octoblu/app-octoblu:latest"
     env_file: "./env.d/app-octoblu.env"
@@ -47,6 +49,8 @@ services:
         - traefik.frontend.rule=HostRegexp:app-octoblu.localhost
         - traefik.frontend.entryPoints=http
         - traefik.port=80
+    networks:
+      - traefik
 
 volumes:
   dependencies:

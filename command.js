@@ -128,15 +128,16 @@ class Command {
     }
     console.log(`${defaultsFilePath} created`)
     console.log("Add your defaults now and run again without --init")
+    let existingDefaults = {}
     if (fs.existsSync(defaultsFilePath)) {
-      console.log("Defaults file already exists, skipping")
-      return
+      existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath))
     }
+    console.log({existingDefaults})
     if (path.extname(defaultsFilePath) === ".env") {
-      fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.defaults()))
+      fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.merge(existingDefaults)))
       return
     }
-    fs.writeJSONSync(defaultsFilePath, environment.defaults(), { spaces: 2 })
+    fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), { spaces: 2 })
   }
 
   compose({ services, outputDirectory, templatesDir }) {

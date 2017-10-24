@@ -1,9 +1,14 @@
 version: '3.4'
 
+networks:
+  common:
+
 services:
   meshblu-core-dispatcher:
     image: "octoblu/meshblu-core-dispatcher:latest"
     env_file: "./env.d/meshblu-core-dispatcher.env"
+    networks:
+      - common
     deploy:
       replicas: 1
       placement:
@@ -20,6 +25,8 @@ services:
   meshblu-core-worker-webhook:
     image: "octoblu/meshblu-core-worker-webhook:latest"
     env_file: "./env.d/meshblu-core-worker-webhook.env"
+    networks:
+      - common
     deploy:
       replicas: 1
       placement:

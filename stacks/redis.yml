@@ -1,13 +1,14 @@
 version: '3.4'
 
 networks:
-  traefik:
+  common:
+
 services:
   redis:
     image: redis
+    networks:
+      - common
     deploy:
       resources:
         limits:
           memory: 100M
-    networks:
-      - traefik

@@ -6,7 +6,7 @@ const { promisify } = require("util")
 class BootstrapService {
   constructor({ env, meshbluConfig }) {
     bindAll(Object.getOwnPropertyNames(BootstrapService.prototype), this)
-    this.deviceCreated = env.GOOGLE_AUTHENTICATOR_UUID != null && env.GOOGLE_AUTHENTICATOR_TOKEN != null
+    this.deviceCreated = env.EMAIL_PASSWORD_AUTHENTICATOR_UUID != null && env.EMAIL_PASSWORD_AUTHENTICATOR_TOKEN != null
     this.meshbluHttp = new MeshbluHttp(meshbluConfig)
   }
 
@@ -21,8 +21,8 @@ class BootstrapService {
     const publicKey = key.exportKey("public")
 
     const { uuid, token } = await register({
-      type: "authenticator:google",
-      name: "Authenticator Google",
+      type: "authenticator:email-password",
+      name: "Authenticator Email Password",
       privateKey,
       publicKey,
       discoverWhitelist: [],
@@ -32,8 +32,8 @@ class BootstrapService {
     })
 
     return {
-      GOOGLE_AUTHENTICATOR_UUID: uuid,
-      GOOGLE_AUTHENTICATOR_TOKEN: token,
+      EMAIL_PASSWORD_AUTHENTICATOR_UUID: uuid,
+      EMAIL_PASSWORD_AUTHENTICATOR_TOKEN: token,
     }
   }
 }

@@ -8,7 +8,7 @@ services:
     image: "octoblu/nanocyte-engine-http:latest"
     env_file: "./env.d/nanocyte-engine-http.env"
     networks:
-      - common
+      common:
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -32,7 +32,7 @@ services:
     image: "octoblu/nanocyte-engine-worker"
     env_file: "./env.d/nanocyte-engine-worker.env"
     networks:
-      - common
+      common:
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -52,7 +52,7 @@ services:
     image: "octoblu/nanocyte-flow-deploy-service:latest"
     env_file: "./env.d/nanocyte-flow-deploy-service.env"
     networks:
-      - common
+      common:
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:

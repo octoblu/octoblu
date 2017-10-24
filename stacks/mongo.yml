@@ -7,7 +7,7 @@ services:
   mongo:
     image: mongo
     networks:
-      - common
+      common:
     deploy:
       resources:
         limits:

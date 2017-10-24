@@ -7,7 +7,7 @@ services:
   redis:
     image: redis
     networks:
-      - common
+      common:
     deploy:
       resources:
         limits:

@@ -21,7 +21,7 @@ services:
         monitor: 1m
     image: containous/traefik:v1.2.0
     networks:
-      - common
+      common:
     ports:
       - 80:80
       - 8080:8080

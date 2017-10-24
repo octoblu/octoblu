@@ -8,7 +8,7 @@ services:
     image: "octoblu/meshblu-core-dispatcher:latest"
     env_file: "./env.d/meshblu-core-dispatcher.env"
     networks:
-      - common
+      common:
     deploy:
       replicas: 1
       placement:
@@ -26,7 +26,7 @@ services:
     image: "octoblu/meshblu-core-worker-webhook:latest"
     env_file: "./env.d/meshblu-core-worker-webhook.env"
     networks:
-      - common
+      common:
     deploy:
       replicas: 1
       placement:

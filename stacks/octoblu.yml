@@ -8,7 +8,7 @@ services:
     image: "octoblu/api-octoblu:latest"
     env_file: "./env.d/api-octoblu.env"
     networks:
-      - common
+      common:
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -32,7 +32,7 @@ services:
     image: "octoblu/app-octoblu:latest"
     env_file: "./env.d/app-octoblu.env"
     networks:
-      - common
+      common:
     depends_on:
       - api-octoblu
     deploy:

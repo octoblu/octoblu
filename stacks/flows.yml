@@ -110,3 +110,4 @@ volumes:
   dependencies:
     labels:
       - './traefik.yml'
+      - './meshblu-http.yml'

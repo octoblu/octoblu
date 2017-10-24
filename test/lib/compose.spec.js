@@ -420,4 +420,44 @@ describe('Compose', () => {
       })
     })
   })
+
+  describe('->volumes', () => {
+    describe('with dependencies', () => {
+      beforeEach(() => {
+        t.dirName = tmp.dirSync().name
+        const filename = path.join(t.dirName, 'other-compose.yml')
+
+        fs.writeFileSync(filename, `
+          networks:
+            bar:
+          services:
+            foo:
+              deploy:
+                placement:
+                  constraints: [node.role == worker]
+              volumes:
+                - ./data:/data/foo
+          volumes:
+            bacon:
+        `)
+
+        t.sut = new Compose({
+          filename: path.join(t.dirName, 'docker-compose.yml'),
+          data: {
+            volumes: {
+              dependencies: {
+                labels:  ['./other-compose.yml'],
+              },
+            },
+          },
+        })
+      })
+
+      it('should return the local volume paths', () => {
+        expect(t.sut.volumes()).to.deep.contain.same.members([{
+          localPath: './data'
+        }])
+      })
+    })
+  })
 })

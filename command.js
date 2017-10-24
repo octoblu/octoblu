@@ -3,15 +3,18 @@
 const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
-const each = require("lodash/each")
+const each = require("lodash/fp/each")
 const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
-const NodeRSA = require("node-rsa")
-const Compose = require("./lib/compose")
+const mkdirp = require('mkdirp')
+const NodeRSA = require('node-rsa')
+const Compose = require('./lib/compose')
 const Environment = require("./lib/environment")
 const Bootstrap = require("./lib/bootstrap")
 const parseEnv = require("./lib/helpers/parse-env-file")
 const { jsonToEnv } = require("./lib/helpers/environment-helper")
+const haveAccessSync = require('./lib/helpers/haveAccessSync')
+const resolveAbsolutePath = require('./lib/helpers/resolveAbsolutePath')
 
 class Command {
   parseOptions() {
@@ -147,19 +150,33 @@ class Command {
         templatesDir,
       })
 
-    if (!fs.existsSync(defaultsFilePath)) {
+    if (!haveAccessSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
       console.error("Generate a defaults file by running this command with --init.")
       process.exit(1)
     }
     compose.toYAMLFileSync(path.join(outputDirectory, "docker-compose.yml"))
     this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
+    this.ensureVolumes({ outputDirectory, volumes: compose.volumes() })
+  }
+
+  ensureVolume({ outputDirectory, volume }) {
+    const { localPath } = volume
+    const absolutePath = resolveAbsolutePath(localPath, outputDirectory)
+
+    if (haveAccessSync(absolutePath)) return
+
+    mkdirp.sync(absolutePath)
+  }
+
+  ensureVolumes({ outputDirectory, volumes }) {
+    each(volume => this.ensureVolume({ outputDirectory, volume }), volumes)
   }
 
   init({ services, outputDirectory, defaultsFilePath, privateKeyFilePath, publicKeyFilePath, templatesDir }) {
     fs.ensureDirSync(outputDirectory)
     const environment = new Environment({ services, templatesDir })
-    if (!fs.existsSync(privateKeyFilePath) && !fs.existsSync(publicKeyFilePath)) {
+    if (!haveAccessSync(privateKeyFilePath) && !haveAccessSync(publicKeyFilePath)) {
       const key = new NodeRSA()
       key.generateKeyPair(1024)
       const privateKey = key.exportKey("private")
@@ -170,7 +187,7 @@ class Command {
     console.log(`${defaultsFilePath} created`)
     console.log("Add your defaults now and run again without --init")
     let existingDefaults = {}
-    if (fs.existsSync(defaultsFilePath)) {
+    if (haveAccessSync(defaultsFilePath)) {
       existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath))
     }
     if (path.extname(defaultsFilePath) === ".env") {
@@ -197,12 +214,6 @@ class Command {
     process.exit(0)
   }
 
-  compose({ services, outputDirectory, templatesDir }) {
-    const compose = new Compose({ services, templatesDir })
-    fs.ensureDirSync(outputDirectory)
-    fs.writeFileSync(path.join(outputDirectory, "docker-compose.yml"), compose.toYAML())
-  }
-
   environment({ services, defaultsFilePath, outputDirectory, templatesDir }) {
     let values
     if (path.extname(defaultsFilePath) === ".env") {
@@ -213,9 +224,10 @@ class Command {
     const environment = new Environment({ services, values, templatesDir })
     const envDir = path.join(outputDirectory, "env.d")
     fs.ensureDirSync(envDir)
-    each(environment.toJSON(), (serviceEnv, serviceName) => {
+
+    each((serviceEnv, serviceName) => {
       fs.writeFileSync(path.join(envDir, serviceName + ".env"), jsonToEnv(serviceEnv))
-    })
+    }, environment.toJSON())
   }
 }
 

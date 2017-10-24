@@ -2,6 +2,11 @@ version: '3.4'
 
 networks:
   common:
+    driver: 'overlay'
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
 
 services:
   traefik:

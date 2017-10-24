@@ -6,7 +6,7 @@ const { promisify } = require("util")
 class BootstrapService {
   constructor({ env, meshbluConfig }) {
     bindAll(Object.getOwnPropertyNames(BootstrapService.prototype), this)
-    this.deviceCreated = env.MESHBLU_GITHUB_AUTHENTICATOR_UUID != null && env.MESHBLU_GITHUB_AUTHENTICATOR_TOKEN != null
+    this.deviceCreated = env.GITHUB_AUTHENTICATOR_UUID != null && env.GITHUB_AUTHENTICATOR_TOKEN != null
     this.meshbluHttp = new MeshbluHttp(meshbluConfig)
   }
 
@@ -32,8 +32,8 @@ class BootstrapService {
     })
 
     return {
-      MESHBLU_GITHUB_AUTHENTICATOR_UUID: uuid,
-      MESHBLU_GITHUB_AUTHENTICATOR_TOKEN: token,
+      GITHUB_AUTHENTICATOR_UUID: uuid,
+      GITHUB_AUTHENTICATOR_TOKEN: token,
     }
   }
 }

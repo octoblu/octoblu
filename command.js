@@ -3,7 +3,8 @@
 const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
-const each = require("lodash/fp/each")
+const fpEach = require("lodash/fp/each")
+const each = require("lodash/each")
 const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
 const mkdirp = require('mkdirp')
@@ -170,7 +171,7 @@ class Command {
   }
 
   ensureVolumes({ outputDirectory, volumes }) {
-    each(volume => this.ensureVolume({ outputDirectory, volume }), volumes)
+    fpEach(volume => this.ensureVolume({ outputDirectory, volume }), volumes)
   }
 
   init({ services, outputDirectory, defaultsFilePath, privateKeyFilePath, publicKeyFilePath, templatesDir }) {
@@ -225,9 +226,9 @@ class Command {
     const envDir = path.join(outputDirectory, "env.d")
     fs.ensureDirSync(envDir)
 
-    each((serviceEnv, serviceName) => {
+    each(environment.toJSON(), (serviceEnv, serviceName) => {
       fs.writeFileSync(path.join(envDir, serviceName + ".env"), jsonToEnv(serviceEnv))
-    }, environment.toJSON())
+    })
   }
 }
 

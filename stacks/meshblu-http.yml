@@ -15,8 +15,8 @@ services:
     networks:
       common:
         aliases:
-          - meshblu-core-protocol-adapter-http
           - meshblu-http
+          - meshblu-core-protocol-adapter-http
     depends_on:
       - meshblu-core-dispatcher
     deploy:

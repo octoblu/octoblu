@@ -1,11 +1,14 @@
 version: '3.4'
 
 networks:
-  traefik:
+  common:
+
 services:
   nanocyte-engine-http:
     image: "octoblu/nanocyte-engine-http:latest"
     env_file: "./env.d/nanocyte-engine-http.env"
+    networks:
+      - common
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -28,6 +31,8 @@ services:
   nanocyte-engine-worker:
     image: "octoblu/nanocyte-engine-worker"
     env_file: "./env.d/nanocyte-engine-worker.env"
+    networks:
+      - common
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -46,6 +51,8 @@ services:
   nanocyte-flow-deploy-service:
     image: "octoblu/nanocyte-flow-deploy-service:latest"
     env_file: "./env.d/nanocyte-flow-deploy-service.env"
+    networks:
+      - common
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:

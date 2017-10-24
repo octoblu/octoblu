@@ -1,7 +1,8 @@
-version: '3'
+version: '3.4'
 
 networks:
-  traefik:
+  common:
+
 services:
   traefik:
     command: traefik --docker --docker.swarmmode --docker.watch --web
@@ -20,9 +21,9 @@ services:
         monitor: 1m
     image: containous/traefik:v1.2.0
     networks:
-    - traefik
+      - common
     ports:
-    - 80:80
-    - 8080:8080
+      - 80:80
+      - 8080:8080
     volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock

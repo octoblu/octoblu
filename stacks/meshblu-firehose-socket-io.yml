@@ -1,9 +1,14 @@
 version: '3.4'
 
+networks:
+  common:
+
 services:
   meshblu-core-firehose-socket-io:
     image: "octoblu/meshblu-core-firehose-socket.io:latest"
     env_file: "./env.d/meshblu-core-firehose-socket-io.env"
+    networks:
+      - common
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:

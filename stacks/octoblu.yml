@@ -1,11 +1,14 @@
 version: '3.4'
 
 networks:
-  traefik:
+  common:
+
 services:
   api-octoblu:
     image: "octoblu/api-octoblu:latest"
     env_file: "./env.d/api-octoblu.env"
+    networks:
+      - common
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -25,11 +28,11 @@ services:
         - traefik.frontend.rule=HostRegexp:api-octoblu.localhost
         - traefik.frontend.entryPoints=http
         - traefik.port=80
-    networks:
-      - traefik
   app-octoblu:
     image: "octoblu/app-octoblu:latest"
     env_file: "./env.d/app-octoblu.env"
+    networks:
+      - common
     depends_on:
       - api-octoblu
     deploy:
@@ -49,8 +52,6 @@ services:
         - traefik.frontend.rule=HostRegexp:app-octoblu.localhost
         - traefik.frontend.entryPoints=http
         - traefik.port=80
-    networks:
-      - traefik
 
 volumes:
   dependencies:

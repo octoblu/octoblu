@@ -6,7 +6,7 @@ const { promisify } = require("util")
 class BootstrapService {
   constructor({ env, meshbluConfig }) {
     bindAll(Object.getOwnPropertyNames(BootstrapService.prototype), this)
-    this.deviceCreated = env.FACEBOOK_AUTHENTICATOR_UUID != null && env.FACEBOOK_AUTHENTICATOR_TOKEN != null
+    this.deviceCreated = env.MESHBLU_GOOGLE_AUTHENTICATOR_UUID != null && env.MESHBLU_GOOGLE_AUTHENTICATOR_TOKEN != null
     this.meshbluHttp = new MeshbluHttp(meshbluConfig)
   }
 
@@ -21,8 +21,8 @@ class BootstrapService {
     const publicKey = key.exportKey("public")
 
     const { uuid, token } = await register({
-      type: "authenticator:facebook",
-      name: "Authenticator Facebook",
+      type: "authenticator:google",
+      name: "Authenticator Google",
       privateKey,
       publicKey,
       discoverWhitelist: [],
@@ -32,8 +32,8 @@ class BootstrapService {
     })
 
     return {
-      FACEBOOK_AUTHENTICATOR_UUID: uuid,
-      FACEBOOK_AUTHENTICATOR_TOKEN: token,
+      MESHBLU_GOOGLE_AUTHENTICATOR_UUID: uuid,
+      MESHBLU_GOOGLE_AUTHENTICATOR_TOKEN: token,
     }
   }
 }

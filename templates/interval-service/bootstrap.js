@@ -3,9 +3,9 @@ const MeshbluHttp = require("meshblu-http")
 const { promisify } = require("util")
 
 class BootstrapService {
-  constructor({ env: { INTERVAL_SERVICE_UUID, INTERVAL_SERVICE_TOKEN }, meshbluConfig }) {
+  constructor({ env, meshbluConfig }) {
     bindAll(Object.getOwnPropertyNames(BootstrapService.prototype), this)
-    this.deviceCreated = INTERVAL_SERVICE_UUID != null && INTERVAL_SERVICE_TOKEN != null
+    this.deviceCreated = env.INTERVAL_SERVICE_UUID != null && env.INTERVAL_SERVICE_TOKEN != null
     this.meshbluHttp = new MeshbluHttp(meshbluConfig)
   }
 

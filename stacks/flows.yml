@@ -31,7 +31,7 @@ services:
         failure_action: rollback
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:interval-service.localhost
+        - traefik.frontend.rule=HostRegexp:interval-service,interval-service.{domain:[a-zA-Z0-9.]+}
         - traefik.frontend.entryPoints=http
         - traefik.port=80
   nanocyte-engine-http:
@@ -58,7 +58,7 @@ services:
         failure_action: rollback
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:nanocyte-engine.localhost
+        - traefik.frontend.rule=HostRegexp:nanocyte-engine,nanocyte-engine.{domain:[a-zA-Z0-9.]+}
         - traefik.frontend.entryPoints=http
         - traefik.port=80
   nanocyte-engine-worker:
@@ -103,7 +103,7 @@ services:
         failure_action: rollback
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy.localhost
+        - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy,nanocyte-flow-deploy.{domain:[a-zA-Z0-9.]+}
         - traefik.frontend.entryPoints=http
         - traefik.port=80
 

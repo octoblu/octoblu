@@ -77,3 +77,45 @@ The result of running this should create the following files.
 - `meshblu-firehose-socket.io`
 - `meshblu-http`
 - `traefik`
+
+
+## Overrides
+You can override the default structure of the stack, or include additional environment variables. This allows you to keep your own custom modifications yet stay in sync with the master of this project.
+
+Create an `overrides` directory in your `outputDirectory`. You can create `overrides/stacks` or `overrides/templates/serviceName`.
+
+This is especially useful for adding HTTP and Let's Encrypt support to traefik using your own domain.
+
+#### Example Traefik Override
+`overrides/stacks/traefik.yml`
+```yaml
+services:
+  traefik:
+    command: >
+      traefik
+        --docker
+        --docker.swarmmode
+        --docker.watch
+        --web
+        --entryPoints='Name:http Address::80 Redirect.EntryPoint:https'
+        --entryPoints='Name:https Address::443 TLS'
+        --defaultEntryPoints=http,https
+        --acme
+        --acme.onhostrule=true
+        --acme.ondemand=true
+        --acme.dnsprovider=digitalocean --acme.domains='your-domain.io'
+        --acme.entrypoint=https
+        --acme.acmelogging
+        --acme.storage=/acme/acme.json --acme.email="acme@your-domain.io"
+
+# Add this if you want to test lets encrypt without violating rate limits
+# remove it to go back to production
+#--acme.caServer="https://acme-staging.api.letsencrypt.org/directory"
+```
+
+`overrides/templates/traefik/environment.json`
+```json
+{
+  "DO_ACCESS_TOKEN" : "my-digital-ocean-access-token"
+}
+```

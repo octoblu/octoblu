@@ -7,15 +7,15 @@ const fpEach = require("lodash/fp/each")
 const each = require("lodash/each")
 const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
-const mkdirp = require('mkdirp')
-const NodeRSA = require('node-rsa')
-const Compose = require('./lib/compose')
+const mkdirp = require("mkdirp")
+const NodeRSA = require("node-rsa")
+const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
 const Bootstrap = require("./lib/bootstrap")
 const parseEnv = require("./lib/helpers/parse-env-file")
 const { jsonToEnv } = require("./lib/helpers/environment-helper")
-const haveAccessSync = require('./lib/helpers/haveAccessSync')
-const resolveAbsolutePath = require('./lib/helpers/resolveAbsolutePath')
+const haveAccessSync = require("./lib/helpers/haveAccessSync")
+const resolveAbsolutePath = require("./lib/helpers/resolveAbsolutePath")
 
 class Command {
   parseOptions() {
@@ -39,7 +39,8 @@ class Command {
         names: ["defaults", "d"],
         type: "string",
         completionType: "filename",
-        help: "A .json, or .env file containing the default environment variables",
+        help:
+          "A .json, or .env file containing the default environment variables",
       },
       {
         names: ["private-key"],
@@ -66,7 +67,8 @@ class Command {
       {
         names: ["stack", "s"],
         type: "arrayOfString",
-        help: "The stack to run, to have multiple stacks use multiple --stack arguments",
+        help:
+          "The stack to run, to have multiple stacks use multiple --stack arguments",
         default: ["meshblu-core"],
       },
       {
@@ -89,8 +91,12 @@ class Command {
     const opts = this.parser.parse(process.argv)
 
     if (opts.help) {
-      const help = this.parser.help({ includeEnv: true, includeDefaults: true }).trimRight()
-      console.error("usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help)
+      const help = this.parser
+        .help({ includeEnv: true, includeDefaults: true })
+        .trimRight()
+      console.error(
+        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help,
+      )
       process.exit(0)
     }
     return opts
@@ -113,21 +119,38 @@ class Command {
     const privateKey = private_key
     const publicKey = public_key
     if (!output) {
-      const help = this.parser.help({ includeEnv: true, includeDefaults: true }).trimRight()
-      console.error("usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help)
+      const help = this.parser
+        .help({ includeEnv: true, includeDefaults: true })
+        .trimRight()
+      console.error(
+        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help,
+      )
       console.error("\noctoblu-stack-generator requires --output, -o option")
       process.exit(1)
     }
 
     const templatesDir = templates_dir
     const outputDirectory = path.resolve(output)
-    const defaultsFilePath = defaults ? path.resolve(defaults) : path.join(outputDirectory, "defaults.env")
-    const privateKeyFilePath = privateKey ? path.resolve(privateKey) : path.join(outputDirectory, "privateKey.pem")
-    const publicKeyFilePath = publicKey ? path.resolve(publicKey) : path.join(outputDirectory, "publicKey.pem")
+    const defaultsFilePath = defaults
+      ? path.resolve(defaults)
+      : path.join(outputDirectory, "defaults.env")
+    const privateKeyFilePath = privateKey
+      ? path.resolve(privateKey)
+      : path.join(outputDirectory, "privateKey.pem")
+    const publicKeyFilePath = publicKey
+      ? path.resolve(publicKey)
+      : path.join(outputDirectory, "publicKey.pem")
 
-    const absoluteStacksDir = path.isAbsolute(stacks_dir) ? stacks_dir : path.join(process.cwd(), stacks_dir)
-    const stackPaths = map(filePath => `${path.join(absoluteStacksDir, filePath)}.yml`, stacks)
-    const compose = Compose.fromYAMLFilesSync(stackPaths, { stripConstraints: no_constraints })
+    const absoluteStacksDir = path.isAbsolute(stacks_dir)
+      ? stacks_dir
+      : path.join(process.cwd(), stacks_dir)
+    const stackPaths = map(
+      filePath => `${path.join(absoluteStacksDir, filePath)}.yml`,
+      stacks,
+    )
+    const compose = Compose.fromYAMLFilesSync(stackPaths, {
+      stripConstraints: no_constraints,
+    })
     const services = keys(compose.toObject().services)
 
     if (init)
@@ -153,11 +176,18 @@ class Command {
 
     if (!haveAccessSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
-      console.error("Generate a defaults file by running this command with --init.")
+      console.error(
+        "Generate a defaults file by running this command with --init.",
+      )
       process.exit(1)
     }
     compose.toYAMLFileSync(path.join(outputDirectory, "docker-compose.yml"))
-    this.environment({ services, defaultsFilePath, outputDirectory, templatesDir })
+    this.environment({
+      services,
+      defaultsFilePath,
+      outputDirectory,
+      templatesDir,
+    })
     this.ensureVolumes({ outputDirectory, volumes: compose.volumes() })
   }
 
@@ -167,17 +197,31 @@ class Command {
 
     if (haveAccessSync(absolutePath)) return
 
-    mkdirp.sync(absolutePath)
+    try {
+      mkdirp.sync(absolutePath)
+    } catch (e) {
+      console.error("WARNING: ", e.toString())
+    }
   }
 
   ensureVolumes({ outputDirectory, volumes }) {
     fpEach(volume => this.ensureVolume({ outputDirectory, volume }), volumes)
   }
 
-  init({ services, outputDirectory, defaultsFilePath, privateKeyFilePath, publicKeyFilePath, templatesDir }) {
+  init({
+    services,
+    outputDirectory,
+    defaultsFilePath,
+    privateKeyFilePath,
+    publicKeyFilePath,
+    templatesDir,
+  }) {
     fs.ensureDirSync(outputDirectory)
     const environment = new Environment({ services, templatesDir })
-    if (!haveAccessSync(privateKeyFilePath) && !haveAccessSync(publicKeyFilePath)) {
+    if (
+      !haveAccessSync(privateKeyFilePath) &&
+      !haveAccessSync(publicKeyFilePath)
+    ) {
       const key = new NodeRSA()
       key.generateKeyPair(1024)
       const privateKey = key.exportKey("private")
@@ -192,10 +236,15 @@ class Command {
       existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath))
     }
     if (path.extname(defaultsFilePath) === ".env") {
-      fs.writeFileSync(defaultsFilePath, jsonToEnv(environment.merge(existingDefaults)))
+      fs.writeFileSync(
+        defaultsFilePath,
+        jsonToEnv(environment.merge(existingDefaults)),
+      )
       return
     }
-    fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), { spaces: 2 })
+    fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), {
+      spaces: 2,
+    })
   }
 
   async bootstrap({ services, defaultsFilePath, templatesDir }) {
@@ -205,7 +254,11 @@ class Command {
     } else {
       existingDefaults = fs.readJSONSync(defaultsFilePath)
     }
-    const bootstrap = new Bootstrap({ services, templatesDir, existingDefaults })
+    const bootstrap = new Bootstrap({
+      services,
+      templatesDir,
+      existingDefaults,
+    })
     const results = await bootstrap.run()
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(defaultsFilePath, jsonToEnv(results))
@@ -227,7 +280,10 @@ class Command {
     fs.ensureDirSync(envDir)
 
     each(environment.toJSON(), (serviceEnv, serviceName) => {
-      fs.writeFileSync(path.join(envDir, serviceName + ".env"), jsonToEnv(serviceEnv))
+      fs.writeFileSync(
+        path.join(envDir, serviceName + ".env"),
+        jsonToEnv(serviceEnv),
+      )
     })
   }
 }

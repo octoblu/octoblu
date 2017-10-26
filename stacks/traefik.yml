@@ -11,7 +11,13 @@ networks:
 
 services:
   traefik:
-    command: traefik --docker --docker.swarmmode --docker.watch --web --defaultEntryPoints=http
+    command: >
+      traefik
+        --docker
+        --docker.swarmmode
+        --docker.watch
+        --web
+        --defaultEntryPoints=http
     env_file: "./env.d/traefik.env"
     deploy:
       mode: global

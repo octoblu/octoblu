@@ -35,7 +35,8 @@
     "mkdirp": "^0.5.1",
     "node-rsa": "^0.4.2",
     "node-yaml": "^3.1.1",
-    "ora": "^1.3.0"
+    "ora": "^1.3.0",
+    "yaml-merge": "^0.0.2"
   },
   "devDependencies": {
     "chai": "^4.1.2",

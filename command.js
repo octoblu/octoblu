@@ -4,8 +4,8 @@ const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
 const each = require("lodash/each")
-const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
+const keys = require("lodash/keys")
 const NodeRSA = require("node-rsa")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
@@ -152,8 +152,13 @@ class Command {
       filePath => `${path.join(absoluteStacksDir, filePath)}.yml`,
       stacks,
     )
+    let overridesDirectory
+    if (overrides) {
+      overridesDirectory = path.join(outputDirectory, 'overrides/stacks')
+    }
     const compose = Compose.fromYAMLFilesSync(stackPaths, {
       stripConstraints: no_constraints,
+      overridesDirectory,
     })
     const services = keys(compose.toObject().services)
 

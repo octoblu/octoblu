@@ -9,7 +9,7 @@ describe("Environment Defaults", function() {
 
   context("when getting the defaults for a single service", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["testworker"], templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testworker"], templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {
@@ -22,7 +22,7 @@ describe("Environment Defaults", function() {
 
   context("when getting the service contains a non-templated env", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["testoddcase"], templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testoddcase"], templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {
@@ -35,7 +35,7 @@ describe("Environment Defaults", function() {
 
   context("when getting the defaults for a multiple services", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["testpatcher", "testworker"], templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testpatcher", "testworker"], templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {

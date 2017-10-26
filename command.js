@@ -3,11 +3,9 @@
 const dashdash = require("dashdash")
 const path = require("path")
 const fs = require("fs-extra")
-const fpEach = require("lodash/fp/each")
 const each = require("lodash/each")
 const keys = require("lodash/fp/keys")
 const map = require("lodash/fp/map")
-const mkdirp = require("mkdirp")
 const NodeRSA = require("node-rsa")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
@@ -15,7 +13,6 @@ const Bootstrap = require("./lib/bootstrap")
 const parseEnv = require("./lib/helpers/parse-env-file")
 const { jsonToEnv } = require("./lib/helpers/environment-helper")
 const haveAccessSync = require("./lib/helpers/haveAccessSync")
-const resolveAbsolutePath = require("./lib/helpers/resolveAbsolutePath")
 
 class Command {
   parseOptions() {
@@ -85,6 +82,12 @@ class Command {
         help: "Template directory",
         default: path.join(__dirname, "templates"),
       },
+      {
+        names: ["overrides"],
+        type: "bool",
+        help: "Apply overrides from outputdir/overrides",
+        default: false,
+      },
     ]
 
     this.parser = dashdash.createParser({ options: options })
@@ -114,6 +117,7 @@ class Command {
       templates_dir,
       private_key,
       public_key,
+      overrides,
     } = this.parseOptions()
     const stacks = stack
     const privateKey = private_key
@@ -162,6 +166,7 @@ class Command {
         privateKeyFilePath,
         services,
         templatesDir,
+        overrides,
       })
     if (bootstrap)
       return this.bootstrap({
@@ -172,6 +177,7 @@ class Command {
         privateKeyFilePath,
         services,
         templatesDir,
+        overrides,
       })
 
     if (!haveAccessSync(defaultsFilePath)) {
@@ -187,25 +193,8 @@ class Command {
       defaultsFilePath,
       outputDirectory,
       templatesDir,
+      overrides,
     })
-    this.ensureVolumes({ outputDirectory, volumes: compose.volumes() })
-  }
-
-  ensureVolume({ outputDirectory, volume }) {
-    const { localPath } = volume
-    const absolutePath = resolveAbsolutePath(localPath, outputDirectory)
-
-    if (haveAccessSync(absolutePath)) return
-
-    try {
-      mkdirp.sync(absolutePath)
-    } catch (e) {
-      console.error("WARNING: ", e.toString())
-    }
-  }
-
-  ensureVolumes({ outputDirectory, volumes }) {
-    fpEach(volume => this.ensureVolume({ outputDirectory, volume }), volumes)
   }
 
   init({
@@ -215,20 +204,14 @@ class Command {
     privateKeyFilePath,
     publicKeyFilePath,
     templatesDir,
+    overrides,
   }) {
     fs.ensureDirSync(outputDirectory)
-    const environment = new Environment({ services, templatesDir })
-    if (
-      !haveAccessSync(privateKeyFilePath) &&
-      !haveAccessSync(publicKeyFilePath)
-    ) {
-      const key = new NodeRSA()
-      key.generateKeyPair(1024)
-      const privateKey = key.exportKey("private")
-      const publicKey = key.exportKey("public")
-      fs.writeFileSync(privateKeyFilePath, privateKey)
-      fs.writeFileSync(publicKeyFilePath, publicKey)
-    }
+    const templatesDirs = [templatesDir]
+    if (overrides)
+      templatesDirs.push(path.join(outputDirectory, "overrides/templates"))
+    const environment = new Environment({ services, templatesDirs })
+    this.ensureKeys({ privateKeyFilePath, publicKeyFilePath })
     console.log(`${defaultsFilePath} created`)
     console.log("Add your defaults now and run again without --init")
     let existingDefaults = {}
@@ -245,6 +228,20 @@ class Command {
     fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), {
       spaces: 2,
     })
+  }
+
+  ensureKeys({ privateKeyFilePath, publicKeyFilePath }) {
+    if (
+      !haveAccessSync(privateKeyFilePath) &&
+      !haveAccessSync(publicKeyFilePath)
+    ) {
+      const key = new NodeRSA()
+      key.generateKeyPair(1024)
+      const privateKey = key.exportKey("private")
+      const publicKey = key.exportKey("public")
+      fs.writeFileSync(privateKeyFilePath, privateKey)
+      fs.writeFileSync(publicKeyFilePath, publicKey)
+    }
   }
 
   async bootstrap({ services, defaultsFilePath, templatesDir }) {
@@ -268,14 +265,23 @@ class Command {
     process.exit(0)
   }
 
-  environment({ services, defaultsFilePath, outputDirectory, templatesDir }) {
+  environment({
+    services,
+    defaultsFilePath,
+    outputDirectory,
+    templatesDir,
+    overrides,
+  }) {
     let values
     if (path.extname(defaultsFilePath) === ".env") {
       values = parseEnv(fs.readFileSync(defaultsFilePath, "utf8"))
     } else {
       values = fs.readJSONSync(defaultsFilePath)
     }
-    const environment = new Environment({ services, values, templatesDir })
+    const templatesDirs = [templatesDir]
+    if (overrides)
+      templatesDirs.push(path.join(outputDirectory, "overrides/templates"))
+    const environment = new Environment({ services, values, templatesDirs })
     const envDir = path.join(outputDirectory, "env.d")
     fs.ensureDirSync(envDir)
 

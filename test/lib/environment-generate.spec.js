@@ -13,7 +13,7 @@ describe("Generate Environment", function() {
         TESTPATCHER_URI: "some-testpatcher-uri",
         TEST_PATCHER_TOKEN: "some-testpatcher-token",
       }
-      this.sut = new Environment({ services: ["testpatcher"], values, templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testpatcher"], values, templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {
@@ -29,7 +29,7 @@ describe("Generate Environment", function() {
 
   context("when getting the service contains a non-templated env", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["testoddcase"], templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testoddcase"], templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {
@@ -49,7 +49,7 @@ describe("Generate Environment", function() {
         TEST_PATCHER_TOKEN: "some-testpatcher-token",
         TEST_PRIVATE_VAR: "some-private-var",
       }
-      this.sut = new Environment({ services: ["testpatcher", "testworker"], values, templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testpatcher", "testworker"], values, templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {
@@ -67,7 +67,7 @@ describe("Generate Environment", function() {
   })
   context("when missing a required env value", function() {
     beforeEach("create environment", function() {
-      this.sut = new Environment({ services: ["testpatcher"], values: {}, templatesDir: this.templatesDir })
+      this.sut = new Environment({ services: ["testpatcher"], values: {}, templatesDirs: [this.templatesDir] })
     })
 
     it("should output json", function() {

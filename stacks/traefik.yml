@@ -12,6 +12,7 @@ networks:
 services:
   traefik:
     command: traefik --docker --docker.swarmmode --docker.watch --web
+    env_file: "./env.d/traefik.env"
     deploy:
       mode: global
       placement:
@@ -25,11 +26,16 @@ services:
         delay: 30s
         failure_action: rollback
         monitor: 1m
-    image: containous/traefik:v1.2.0
+    image: traefik:v1.4
     networks:
       common:
     ports:
       - 80:80
+      - 443:443
       - 8080:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - acme-storage:/acme
+
+volumes:
+  acme-storage:

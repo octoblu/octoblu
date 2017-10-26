@@ -35,7 +35,6 @@ services:
         constraints: [node.role == worker]
       labels:
         - traefik.frontend.rule=HostRegexp:meshblu-http,meshblu-http.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
 
 volumes:

@@ -32,7 +32,6 @@ services:
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:api-octoblu,api-octoblu.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
   app-octoblu:
     image: "octoblu/app-octoblu:latest"
@@ -56,7 +55,6 @@ services:
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:app-octoblu,app-octoblu.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
 
 volumes:

@@ -19,4 +19,7 @@ services:
         limits:
           memory: 100M
     volumes:
-      - ./data/mongo-data:/data/db
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:

@@ -32,7 +32,6 @@ services:
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:interval-service,interval-service.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
   nanocyte-engine-http:
     image: "octoblu/nanocyte-engine-http:latest"
@@ -59,7 +58,6 @@ services:
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-engine,nanocyte-engine.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
   nanocyte-engine-worker:
     image: "octoblu/nanocyte-engine-worker"
@@ -104,7 +102,6 @@ services:
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy,nanocyte-flow-deploy.{domain:[a-zA-Z0-9.]+}
-        - traefik.frontend.entryPoints=http
         - traefik.port=80
 
 volumes:

@@ -9,7 +9,6 @@ const keys = require("lodash/keys")
 const NodeRSA = require("node-rsa")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
-const Bootstrap = require("./lib/bootstrap")
 const parseEnv = require("./lib/helpers/parse-env-file")
 const { jsonToEnv } = require("./lib/helpers/environment-helper")
 const haveAccessSync = require("./lib/helpers/haveAccessSync")
@@ -26,11 +25,6 @@ class Command {
         names: ["init"],
         type: "bool",
         help: "Generate defaults json file",
-      },
-      {
-        names: ["bootstrap", "b"],
-        type: "bool",
-        help: "Generate application devices and environment",
       },
       {
         names: ["defaults", "d"],
@@ -108,7 +102,6 @@ class Command {
   run() {
     const {
       init,
-      bootstrap,
       output,
       defaults,
       no_constraints,
@@ -173,18 +166,6 @@ class Command {
         templatesDir,
         overrides,
       })
-    if (bootstrap)
-      return this.bootstrap({
-        outputDirectory,
-        init,
-        defaultsFilePath,
-        publicKeyFilePath,
-        privateKeyFilePath,
-        services,
-        templatesDir,
-        overrides,
-      })
-
     if (!haveAccessSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
       console.error(
@@ -247,27 +228,6 @@ class Command {
       fs.writeFileSync(privateKeyFilePath, privateKey)
       fs.writeFileSync(publicKeyFilePath, publicKey)
     }
-  }
-
-  async bootstrap({ services, defaultsFilePath, templatesDir }) {
-    let existingDefaults
-    if (path.extname(defaultsFilePath) === ".env") {
-      existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath, "utf8"))
-    } else {
-      existingDefaults = fs.readJSONSync(defaultsFilePath)
-    }
-    const bootstrap = new Bootstrap({
-      services,
-      templatesDir,
-      existingDefaults,
-    })
-    const results = await bootstrap.run()
-    if (path.extname(defaultsFilePath) === ".env") {
-      fs.writeFileSync(defaultsFilePath, jsonToEnv(results))
-    } else {
-      fs.writeJSONSync(defaultsFilePath, results, { spaces: 2 })
-    }
-    process.exit(0)
   }
 
   environment({

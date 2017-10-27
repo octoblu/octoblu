@@ -1,3 +1,4 @@
 {
-  "BACKEND_URI": "app-octoblu.localhost"
+  "BACKEND_URI": "api-octoblu.localhost",
+  "SKIP_SSL": "true"
 }

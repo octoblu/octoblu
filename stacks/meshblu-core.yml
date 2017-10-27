@@ -20,7 +20,7 @@ services:
       placement:
         constraints: [node.role == worker]
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 30s
         max_attempts: 5
         window: 120s
@@ -38,7 +38,7 @@ services:
       placement:
         constraints: [node.role == worker]
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 30s
         max_attempts: 5
         window: 120s

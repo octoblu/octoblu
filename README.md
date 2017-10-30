@@ -33,6 +33,42 @@ The result of running this should create a `defaults.env` file in the output dir
 
 **NOTE:** This will override any existing defaults. Make sure to either run this in an empty project, or make sure you've committed and synced your changes in git.
 
+### Bootstrap
+
+Setup databases indexes and create meshblu devices for the services.
+
+```bash
+mkdir -p ./test-stack
+cd ./test-stack
+```
+
+
+Init the bootstrap stack
+
+```bash
+octoblu-stack-generator --init \
+  --stacks bootstrap \
+  --output .
+```
+
+Update the `defaults.env` and then create the bootstrap stack
+
+```bash
+octoblu-stack-generator \
+  --stacks bootstrap \
+  --output .
+```
+
+
+Run the stack
+
+```bash
+docker stack deploy \
+  --compose-file ./docker-compose.yml \
+  --with-registry-auth octoblu
+```
+
+
 ### Create a swarm
 ```bash
 docker-machine create --driver virtualbox manager

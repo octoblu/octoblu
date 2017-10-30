@@ -1,0 +1,4 @@
+{
+  "NGINX_DUMB_PROXY_TARGET_HOSTNAME": "api-octoblu",
+  "NGINX_DUMB_PROXY_TARGET_PROTOCOL": "http"
+}

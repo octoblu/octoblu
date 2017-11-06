@@ -16,7 +16,7 @@ services:
     networks:
       common:
     volumes:
-      - .:/data
+      - bootstrap-data:/data
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -34,6 +34,7 @@ services:
         monitor: 1m
 
 volumes:
+  bootstrap-data:
   dependencies:
     labels:
       - './meshblu-http.yml'

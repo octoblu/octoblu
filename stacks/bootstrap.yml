@@ -15,6 +15,8 @@ services:
     env_file: "./env.d/bootstrap-octoblu-stack.env"
     networks:
       common:
+        aliases:
+          - bootstrap
     volumes:
       - bootstrap-data:/data
     depends_on:
@@ -32,6 +34,9 @@ services:
         delay: 30s
         failure_action: rollback
         monitor: 1m
+      labels:
+        - traefik.frontend.rule=HostRegexp:bootstrap,bootstrap.{domain:[a-zA-Z0-9.]+}
+        - traefik.port=80
 
 volumes:
   bootstrap-data:

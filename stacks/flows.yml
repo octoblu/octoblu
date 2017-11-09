@@ -28,7 +28,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:interval-service,interval-service.{domain:[a-zA-Z0-9.]+}
@@ -54,7 +54,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-engine,nanocyte-engine.{domain:[a-zA-Z0-9.]+}
@@ -77,7 +77,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
   nanocyte-flow-deploy-service:
     image: "octoblu/nanocyte-flow-deploy-service:latest"
@@ -98,7 +98,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:nanocyte-flow-deploy,nanocyte-flow-deploy.{domain:[a-zA-Z0-9.]+}

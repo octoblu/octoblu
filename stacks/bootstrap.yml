@@ -32,7 +32,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:bootstrap,bootstrap.{domain:[a-zA-Z0-9.]+}

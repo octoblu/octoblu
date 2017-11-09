@@ -30,7 +30,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
     image: traefik:v1.4
     networks:

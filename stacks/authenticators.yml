@@ -26,7 +26,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:email-password-site,email-password-site.{domain:[a-zA-Z0-9.]+}
@@ -49,7 +49,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
       labels:
         - traefik.frontend.rule=HostRegexp:email-password,email-password.{domain:[a-zA-Z0-9.]+}

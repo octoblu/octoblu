@@ -26,7 +26,7 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m
   meshblu-core-worker-webhook:
     image: "octoblu/meshblu-core-worker-webhook:latest"
@@ -44,5 +44,5 @@ services:
         window: 120s
       update_config:
         delay: 30s
-        failure_action: rollback
+        failure_action: continue
         monitor: 1m

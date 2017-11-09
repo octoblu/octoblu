@@ -68,7 +68,7 @@ docker stack deploy \
   --with-registry-auth octoblu
 ```
 
-Once the `bootstrap-octoblu-stack` service runs, it should produce a `services.env` file in the current directory. Add the new environment variables to the `defaults.env` file.
+Once the `bootstrap-octoblu-stack` service is running, execute `curl -X POST http://{docker ip address}/bootstrap`. Add the results to the `defaults.env` file.
 
 
 ### Create a swarm

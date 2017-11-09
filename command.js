@@ -19,69 +19,69 @@ class Command {
       {
         names: ["help", "h"],
         type: "bool",
-        help: "Print this help and exit.",
+        help: "Print this help and exit."
       },
       {
         names: ["init"],
         type: "bool",
-        help: "Generate defaults json file",
+        help: "Generate defaults json file"
       },
       {
         names: ["defaults", "d"],
         type: "string",
         completionType: "filename",
         help:
-          "A .json, or .env file containing the default environment variables",
+          "A .json, or .env file containing the default environment variables"
       },
       {
         names: ["private-key"],
         type: "string",
         completionType: "filename",
-        help: "Private Key PEM file (PKCS8)",
+        help: "Private Key PEM file (PKCS8)"
       },
       {
         names: ["public-key"],
         type: "string",
         completionType: "filename",
-        help: "Public Key PEM file (PKCS8)",
+        help: "Public Key PEM file (PKCS8)"
       },
       {
         names: ["no-constraints"],
         type: "bool",
-        help: "Disable docker node.role constraints",
+        help: "Disable docker node.role constraints"
       },
       {
         names: ["output", "o"],
         type: "string",
-        help: "Output directory for Octoblu stack files",
+        help: "Output directory for Octoblu stack files"
       },
       {
         names: ["stack", "s"],
         type: "arrayOfString",
         help:
           "The stack to run, to have multiple stacks use multiple --stack arguments",
-        default: ["meshblu-core"],
+        default: ["meshblu-core"]
       },
       {
         names: ["stacks-dir"],
         type: "string",
         completionType: "filename",
         help: "Stacks directory",
-        default: path.join(__dirname, "stacks"),
+        default: path.join(__dirname, "stacks")
       },
       {
         names: ["templates-dir"],
         type: "string",
         completionType: "filename",
         help: "Template directory",
-        default: path.join(__dirname, "templates"),
+        default: path.join(__dirname, "templates")
       },
       {
         names: ["overrides"],
         type: "bool",
         help: "Apply overrides from outputdir/overrides",
-        default: false,
-      },
+        default: false
+      }
     ]
 
     this.parser = dashdash.createParser({ options: options })
@@ -92,7 +92,7 @@ class Command {
         .help({ includeEnv: true, includeDefaults: true })
         .trimRight()
       console.error(
-        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help,
+        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help
       )
       process.exit(0)
     }
@@ -110,7 +110,7 @@ class Command {
       templates_dir,
       private_key,
       public_key,
-      overrides,
+      overrides
     } = this.parseOptions()
     const stacks = stack
     const privateKey = private_key
@@ -120,7 +120,7 @@ class Command {
         .help({ includeEnv: true, includeDefaults: true })
         .trimRight()
       console.error(
-        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help,
+        "usage: octoblu-stack-generator [OPTIONS]\n" + "options:\n" + help
       )
       console.error("\noctoblu-stack-generator requires --output, -o option")
       process.exit(1)
@@ -143,15 +143,15 @@ class Command {
       : path.join(process.cwd(), stacks_dir)
     const stackPaths = map(
       filePath => `${path.join(absoluteStacksDir, filePath)}.yml`,
-      stacks,
+      stacks
     )
     let overridesDirectory
     if (overrides) {
-      overridesDirectory = path.join(outputDirectory, 'overrides/stacks')
+      overridesDirectory = path.join(outputDirectory, "overrides/stacks")
     }
     const compose = Compose.fromYAMLFilesSync(stackPaths, {
       stripConstraints: no_constraints,
-      overridesDirectory,
+      overridesDirectory
     })
     const services = keys(compose.toObject().services)
 
@@ -164,12 +164,12 @@ class Command {
         privateKeyFilePath,
         services,
         templatesDir,
-        overrides,
+        overrides
       })
     if (!haveAccessSync(defaultsFilePath)) {
       console.error(`Defaults file ${defaultsFilePath} not found.`)
       console.error(
-        "Generate a defaults file by running this command with --init.",
+        "Generate a defaults file by running this command with --init."
       )
       process.exit(1)
     }
@@ -179,7 +179,7 @@ class Command {
       defaultsFilePath,
       outputDirectory,
       templatesDir,
-      overrides,
+      overrides
     })
   }
 
@@ -190,7 +190,7 @@ class Command {
     privateKeyFilePath,
     publicKeyFilePath,
     templatesDir,
-    overrides,
+    overrides
   }) {
     fs.ensureDirSync(outputDirectory)
     const templatesDirs = [templatesDir]
@@ -207,12 +207,12 @@ class Command {
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(
         defaultsFilePath,
-        jsonToEnv(environment.merge(existingDefaults)),
+        jsonToEnv(environment.merge(existingDefaults))
       )
       return
     }
     fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), {
-      spaces: 2,
+      spaces: 2
     })
   }
 
@@ -235,7 +235,7 @@ class Command {
     defaultsFilePath,
     outputDirectory,
     templatesDir,
-    overrides,
+    overrides
   }) {
     let values
     if (path.extname(defaultsFilePath) === ".env") {
@@ -253,7 +253,7 @@ class Command {
     each(environment.toJSON(), (serviceEnv, serviceName) => {
       fs.writeFileSync(
         path.join(envDir, serviceName + ".env"),
-        jsonToEnv(serviceEnv),
+        jsonToEnv(serviceEnv)
       )
     })
   }

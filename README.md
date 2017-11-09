@@ -37,18 +37,12 @@ The result of running this should create a `defaults.env` file in the output dir
 
 Setup databases indexes and create meshblu devices for the services.
 
-```bash
-mkdir -p ./test-stack
-cd ./test-stack
-```
-
-
 Init the bootstrap stack
 
 ```bash
 octoblu-stack-generator --init \
   --stacks bootstrap \
-  --output .
+  --output bootstrap
 ```
 
 Update the `defaults.env` and then create the bootstrap stack
@@ -56,16 +50,17 @@ Update the `defaults.env` and then create the bootstrap stack
 ```bash
 octoblu-stack-generator \
   --stacks bootstrap \
-  --output .
+  --output bootstrap
 ```
 
 
 Run the stack
 
 ```bash
+cd bootstrap
 docker stack deploy \
   --compose-file ./docker-compose.yml \
-  --with-registry-auth octoblu
+  --with-registry-auth bootstrap
 ```
 
 Once the `bootstrap-octoblu-stack` service is running, execute `curl -X POST http://{docker ip address}/bootstrap`. Add the results to the `defaults.env` file.

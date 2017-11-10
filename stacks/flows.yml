@@ -33,6 +33,29 @@ services:
       labels:
         - traefik.frontend.rule=HostRegexp:interval-service,interval-service.{domain:[a-zA-Z0-9.]+}
         - traefik.port=80
+  trigger-service:
+    image: "octoblu/triggers-service:latest"
+    env_file: "./env.d/trigger-service.env"
+    networks:
+      common:
+    depends_on:
+      - meshblu-core-protocol-adapter-http
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
+      restart_policy:
+        condition: any
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: continue
+        monitor: 1m
+      labels:
+        - traefik.frontend.rule=HostRegexp:trigger-service,trigger-service.{domain:[a-zA-Z0-9.]+}
+        - traefik.port=80
   nanocyte-engine-http:
     image: "octoblu/nanocyte-engine-http:latest"
     env_file: "./env.d/nanocyte-engine-http.env"

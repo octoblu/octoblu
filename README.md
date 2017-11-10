@@ -25,7 +25,7 @@ Generate the default environment file for the stack.
 ```bash
 mkdir -p ./test-stack
 octoblu-stack-generator --init \
-  --stacks meshblu-core \
+  --stack meshblu-core \
   --output ./test-stack
 ```
 
@@ -37,24 +37,45 @@ The result of running this should create a `defaults.env` file in the output dir
 
 Setup databases indexes and create meshblu devices for the services.
 
+```bash
+mkdir -p ./bootstrap
+```
+
 Init the bootstrap stack
 
 ```bash
 octoblu-stack-generator --init \
-  --stacks bootstrap \
-  --output bootstrap
+  --stack bootstrap \
+  --output ./bootstrap
 ```
 
 Update the `defaults.env` and then create the bootstrap stack
 
 ```bash
 octoblu-stack-generator \
-  --stacks bootstrap \
-  --output bootstrap
+  --stack bootstrap \
+  --output ./bootstrap
 ```
 
+Note, if you plan to run redis & mongo in docker for local development, you'll need to add the redis and mongo stacks, and you'll want to make sure the bootstrap stack name matches the name you plan to run it with.)
 
-Run the stack
+```bash
+octoblu-stack-generator \
+  --init \
+  --stack bootstrap \
+  --stack mongo \
+  --stack redis \
+  --output ./bootstrap
+
+octoblu-stack-generator \
+  --stack bootstrap \
+  --stack mongo \
+  --stack redis \
+  --no-constraints \
+  --output ./bootstrap
+```
+
+Run the stack.
 
 ```bash
 cd bootstrap
@@ -85,7 +106,7 @@ Generate a stack and all of the required docker and environment files.
 
 ```bash
 octoblu-stack-generator \
-  --stacks meshblu-core \
+  --stack meshblu-core \
   --output ./test-stack
 ```
 

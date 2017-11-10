@@ -44,4 +44,3 @@ volumes:
     labels:
       - './meshblu-http.yml'
       - './traefik.yml'
-      - './mongo.yml'

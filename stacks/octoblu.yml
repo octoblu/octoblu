@@ -10,13 +10,14 @@ networks:
         - subnet: 172.28.0.0/16
 
 services:
-  api-octoblu:
-    image: "octoblu/api-octoblu:latest"
-    env_file: "./env.d/api-octoblu.env"
+  octoblu-frontend:
+    image: "octoblu/octoblu-frontend:latest"
+    env_file: "./env.d/octoblu-frontend.env"
     networks:
       common:
-    depends_on:
-      - meshblu-core-protocol-adapter-http
+        aliases:
+          - app-octoblu
+          - octoblu-frontend
     deploy:
       replicas: 1
       placement:
@@ -31,11 +32,11 @@ services:
         failure_action: continue
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:api-octoblu,api-octoblu.{domain:[a-zA-Z0-9.]+}
+        - traefik.frontend.rule=HostRegexp:app-octoblu,app-octoblu.{domain:[a-zA-Z0-9.]+}
         - traefik.port=80
-  app-api-octoblu:
+  octoblu-frontend-api-proxy:
     image: 'octoblu/nginx-dumb-proxy:latest'
-    env_file: './env.d/app-api-octoblu.env'
+    env_file: './env.d/octoblu-frontend-api-proxy.env'
     networks:
       common:
     deploy:
@@ -54,11 +55,16 @@ services:
       labels:
         - traefik.frontend.rule=HostRegexp:app-octoblu,app-octoblu.{domain:[a-zA-Z0-9.]+};PathPrefix:/api
         - traefik.port=80
-  app-octoblu:
-    image: "octoblu/app-octoblu:latest"
-    env_file: "./env.d/app-octoblu.env"
+  octoblu-backend:
+    image: "octoblu/octoblu-backend:latest"
+    env_file: "./env.d/octoblu-backend.env"
     networks:
       common:
+        aliases:
+          - api-octoblu
+          - octoblu-backend
+    depends_on:
+      - meshblu-core-protocol-adapter-http
     deploy:
       replicas: 1
       placement:
@@ -73,7 +79,7 @@ services:
         failure_action: continue
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:app-octoblu,app-octoblu.{domain:[a-zA-Z0-9.]+}
+        - traefik.frontend.rule=HostRegexp:api-octoblu,api-octoblu.{domain:[a-zA-Z0-9.]+}
         - traefik.port=80
 
 volumes:

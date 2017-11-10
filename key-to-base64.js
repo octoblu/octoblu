@@ -47,7 +47,7 @@ class Command {
     let format = 'private'
     if (input.match(/PUBLIC KEY/)) format = 'public'
     const key = new NodeRSA(input, format)
-    const exportReplace = key.exportKey(format).replace(/\n/g, '')
+    const exportReplace = key.exportKey(format) //.replace(/\n/g, '')
     console.log(Buffer.from(exportReplace).toString('base64'))
   }
 

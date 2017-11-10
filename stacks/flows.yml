@@ -39,7 +39,7 @@ services:
     networks:
       common:
         aliases:
-          - nanocyte-http
+          - nanocyte-engine
           - nanocyte-engine-http
     depends_on:
       - meshblu-core-protocol-adapter-http

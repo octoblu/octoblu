@@ -38,6 +38,9 @@ services:
     env_file: "./env.d/trigger-service.env"
     networks:
       common:
+        aliases:
+          - triggers
+          - trigger-service
     depends_on:
       - meshblu-core-protocol-adapter-http
     deploy:
@@ -54,7 +57,7 @@ services:
         failure_action: continue
         monitor: 1m
       labels:
-        - traefik.frontend.rule=HostRegexp:trigger-service,trigger-service.{domain:[a-zA-Z0-9.]+}
+        - traefik.frontend.rule=HostRegexp:triggers,triggers.{domain:[a-zA-Z0-9.]+}
         - traefik.port=80
   nanocyte-engine-http:
     image: "octoblu/nanocyte-engine-http:latest"

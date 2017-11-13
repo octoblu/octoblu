@@ -7,6 +7,7 @@ const each = require("lodash/each")
 const map = require("lodash/fp/map")
 const keys = require("lodash/keys")
 const NodeRSA = require("node-rsa")
+const crypto = require("crypto")
 const Compose = require("./lib/compose")
 const Environment = require("./lib/environment")
 const parseEnv = require("./lib/helpers/parse-env-file")
@@ -197,36 +198,49 @@ class Command {
     if (overrides)
       templatesDirs.push(path.join(outputDirectory, "overrides/templates"))
     const environment = new Environment({ services, templatesDirs })
-    this.ensureKeys({ privateKeyFilePath, publicKeyFilePath })
+    const { publicKey, privateKey } = this.ensureKeys({ privateKeyFilePath, publicKeyFilePath })
     console.log(`${defaultsFilePath} created`)
     console.log("Add your defaults now and run again without --init")
     let existingDefaults = {}
+    const privateKeys = {
+      MESHBLU_PRIVATE_KEY_BASE64: new Buffer(privateKey).toString("base64"),
+      MESHBLU_PUBLIC_KEY_BASE64: new Buffer(publicKey).toString("base64"),
+      MESHBLU_CORE_TOKEN: crypto.randomBytes(16).toString('hex'),
+    }
     if (haveAccessSync(defaultsFilePath)) {
       existingDefaults = parseEnv(fs.readFileSync(defaultsFilePath))
     }
     if (path.extname(defaultsFilePath) === ".env") {
       fs.writeFileSync(
         defaultsFilePath,
-        jsonToEnv(environment.merge(existingDefaults))
+        jsonToEnv(environment.merge(privateKeys, existingDefaults))
       )
       return
     }
-    fs.writeJSONSync(defaultsFilePath, environment.merge(existingDefaults), {
+    fs.writeJSONSync(defaultsFilePath, environment.merge(privateKeys, existingDefaults), {
       spaces: 2
     })
   }
 
   ensureKeys({ privateKeyFilePath, publicKeyFilePath }) {
+    let privateKey, publicKey
     if (
       !haveAccessSync(privateKeyFilePath) &&
       !haveAccessSync(publicKeyFilePath)
     ) {
       const key = new NodeRSA()
       key.generateKeyPair(1024)
-      const privateKey = key.exportKey("private")
-      const publicKey = key.exportKey("public")
+      privateKey = key.exportKey("private")
+      publicKey = key.exportKey("public")
       fs.writeFileSync(privateKeyFilePath, privateKey)
       fs.writeFileSync(publicKeyFilePath, publicKey)
+    } else {
+      privateKey = fs.readFileSync(privateKeyFilePath, "utf8")
+      publicKey = fs.readFileSync(privateKeyFilePath, "utf8")
+    }
+    return {
+      privateKey,
+      publicKey
     }
   }
 

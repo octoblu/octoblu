@@ -10,15 +10,14 @@
   },
   "scripts": {
     "test": "mocha",
-    "test:watch": "mocha -wG"
+    "test:watch": "mocha -wG",
+    "generate:toc": "npx markdown-toc -i README.md"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/octoblu/octoblu.git"
   },
-  "keywords": [
-    "octoblu"
-  ],
+  "keywords": ["octoblu"],
   "author": "Octoblu <npm@octoblu.com>",
   "license": "MIT",
   "bugs": {
@@ -44,6 +43,7 @@
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.7.0",
+    "markdown-toc": "^1.2.0",
     "mocha": "^4.0.0",
     "sinon": "^4.0.1",
     "sinon-chai": "^2.14.0",

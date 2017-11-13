@@ -1,5 +1,28 @@
 # octoblu
 
+Run your own Octobu stack in Docker Swarm.
+
+<!-- toc -->
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Local Development](#local-development)
+  * [Bootstrap](#bootstrap)
+- [Production Cluster](#production-cluster)
+  * [Prequisites](#prequisites)
+  * [Bootstrap](#bootstrap-1)
+- [Stacks](#stacks)
+  * [Available Stacks](#available-stacks)
+- [Overrides](#overrides)
+    + [Example Traefik Override](#example-traefik-override)
+
+<!-- tocstop -->
+
+## Prerequisites
+
+- Docker >= 17.09.0-ce
+- Node.js >= 8.0
+
 ## Installation
 
 ```bash
@@ -12,105 +35,86 @@ or
 npm install --global octoblu
 ```
 
-## Usage
+## Local Development
 
-```bash
-octoblu-stack-generator --help
-```
+Runing a local development stack is similar to a production cluster, however there are some special considerations to make to enable a local stack.
 
-### Initialize
-
-Generate the default environment file for the stack.
-
-```bash
-mkdir -p ./test-stack
-octoblu-stack-generator --init \
-  --stack meshblu-core \
-  --output ./test-stack
-```
-
-The result of running this should create a `defaults.env` file in the output directory `./test-stack`.
-
-**NOTE:** This will override any existing defaults. Make sure to either run this in an empty project, or make sure you've committed and synced your changes in git.
+These instructions assume you are developing on localhost. The domain `localtest.me` can be used to access services locally without setting up your own DNS or hosts (e.g. `meshblu-http.localtest.me`) .
 
 ### Bootstrap
 
-Setup databases indexes and create meshblu devices for the services.
+Octoblu requires some devices to exist in Meshblu before certain services will run. Creating the bootstrap stack will help to create these devices and provide some defaults to add to your dev stack. Redis and Mongo will be started as part of this stack and will persist data using a docker volume. Removing this docker volume will erase all data and you will need to bootstrap again.
 
 ```bash
-mkdir -p ./bootstrap
+mkdir dev
+cp examples/dev/defaults.env dev/defaults.env
+octoblu-stack-generator --output dev --stack bootstrap-development --init --no-constraints
+octoblu-stack-generator --output dev --stack bootstrap-development --no-constraints
+cd dev
+docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
 ```
 
-Init the bootstrap stack
+Once services are running, you'll need to curl the bootstrap service to generate the appropriate devices.
 
 ```bash
-octoblu-stack-generator --init \
-  --stack bootstrap \
-  --output ./bootstrap
+cd dev
+curl -X POST http://bootstrap.localtest.me/bootstrap >> defaults.env
+cd ..
+octoblu-stack-generator --output dev --stack octoblu-development --init --no-constraints
+octoblu-stack-generator --output dev --stack octoblu-development --no-constraints
+cd dev
+docker stack deploy -c ./docker-compose.yml --with-registry-auth octoblu
 ```
 
-Update the `defaults.env` and then create the bootstrap stack
+## Production Cluster
+
+### Prequisites
+
+- Mongodb >= 3.0
+- Redis >= 3.0
+
+This step will create a small Octoblu production cluster. Setting up MongoDB and Redis is outide the scope of this document.
+
+These instructions assume you have a domain available and will setup a wildcard DNS entry to point to your docker swarm. It also assumes you will use (let's encrypt)[letsencrypt.org] for ssl certs. The examples provided are configured for Digital Ocean as a DNS provider, for alternatives see (traefik docs)[https://docs.traefik.io/configuration/acme/#dnsprovider].
+
+### Bootstrap
+
+Octoblu requires some devices to exist in Meshblu before certain services will run. Creating the bootstrap stack will help to create these devices and provide some defaults to add to your dev stack. Redis and Mongo will be started as part of this stack and will persist data using a docker volume. Removing this docker volume will erase all data and you will need to bootstrap again.
 
 ```bash
-octoblu-stack-generator \
-  --stack bootstrap \
-  --output ./bootstrap
+mkdir prod 
+cp examples/prod/defaults.env prod/defaults.env
+cp -r examples/prod/overrides prod/overrides
+# Edit prod/overrides/stacks/traefik.yml and add your domain
+# Edit prod/overrides/templates/traefik/environment.json and add your Digital Ocean credentials
+octoblu-stack-generator --output prod --stack bootstrap --init --overrides
+# Edit prod/defaults.env and set MONGODB_URI and REDIS_URI to the correct URLs
+octoblu-stack-generator --output prod --stack bootstrap --overrides
+cd prod
+docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
 ```
 
-Note, if you plan to run redis & mongo in docker for local development, you'll need to add the redis and mongo stacks, and you'll want to make sure the bootstrap stack name matches the name you plan to run it with.)
+Once services are running, you'll need to curl the bootstrap service to generate the appropriate devices.
 
 ```bash
-octoblu-stack-generator \
-  --init \
-  --stack bootstrap \
-  --stack mongo \
-  --stack redis \
-  --output ./bootstrap
-
-octoblu-stack-generator \
-  --stack bootstrap \
-  --stack mongo \
-  --stack redis \
-  --no-constraints \
-  --output ./bootstrap
+cd prod
+curl -X POST http://bootstrap.{your.domain}/bootstrap >> defaults.env
+cd ..
+octoblu-stack-generator --output prod --stack octoblu --init --overrides
+octoblu-stack-generator --output prod --stack octoblu --overrides
+cd dev
+docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
 ```
 
-Run the stack.
+## Stacks
 
-```bash
-cd bootstrap
-docker stack deploy \
-  --compose-file ./docker-compose.yml \
-  --with-registry-auth bootstrap
-```
+Stacks are mostly Docker Stacks with a hack using volume labels to compose multiple stacks together. A stack represents a group of services to be run in the cluster. Each service has an environment file that controls its settings.
 
-Once the `bootstrap-octoblu-stack` service is running, execute `curl -X POST http://{docker ip address}/bootstrap`. Add the results to the `defaults.env` file.
+In order to change variables in each service file, simply edit the defaults.env file in your ouput dir and run `octoblu-stack-generator` again with the appropriate options.
 
+To run a subset of Octoblu, run `octoblu-stack-generator --stack {stackname}` and deploy the stack.
 
-### Create a swarm
-```bash
-docker-machine create --driver virtualbox manager
-eval (docker-machine env manager)
-docker swarm init --advertise-addr eth1
-# copy the join command
-docker-machine create --driver virtualbox worker
-eval (docker-machine env worker)
-# paste the join command
-eval (docker-machine env manager)
-docker stack deploy -c docker-compose.yml octoblu
-```
-
-### Generate a stack
-
-Generate a stack and all of the required docker and environment files.
-
-```bash
-octoblu-stack-generator \
-  --stack meshblu-core \
-  --output ./test-stack
-```
-
-The result of running this should create the following files.
+An example output dir:
 
 ```txt
 .
@@ -123,8 +127,12 @@ The result of running this should create the following files.
 1 directory, 4 files
 ```
 
-## Available Stacks
+### Available Stacks
 
+- `octoblu-development`
+- `bootstrap-development`
+
+- `bootstrap`
 - `octoblu`
 - `flows`
 - `meshblu-core`

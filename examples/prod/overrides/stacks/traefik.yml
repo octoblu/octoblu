@@ -1,0 +1,17 @@
+services:
+  traefik:
+    command: >
+      traefik
+        --docker
+        --docker.swarmmode
+        --docker.watch
+        --web
+        --entryPoints='Name:http Address::80 Redirect.EntryPoint:https'
+        --entryPoints='Name:https Address::443 TLS'
+        --defaultEntryPoints=http,https,ws,wss
+        --acme
+        --acme.onhostrule=true
+        --acme.ondemand=true
+        --acme.dnsprovider=digitalocean --acme.domains='{your.domain}'
+        --acme.entrypoint=https --acme.acmelogging --acme.storage=/acme/acme.json --acme.email="acme@{your.domain}"
+#--acme.caServer="https://acme-staging.api.letsencrypt.org/directory"

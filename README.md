@@ -75,7 +75,7 @@ docker stack deploy -c ./docker-compose.yml --with-registry-auth octoblu
 
 This step will create a small Octoblu production cluster. Setting up MongoDB and Redis is outide the scope of this document.
 
-These instructions assume you have a domain available and will setup a wildcard DNS entry to point to your docker swarm. It also assumes you will use (let's encrypt)[letsencrypt.org] for ssl certs. The examples provided are configured for Digital Ocean as a DNS provider, for alternatives see (traefik docs)[https://docs.traefik.io/configuration/acme/#dnsprovider].
+These instructions assume you have a domain available and will setup a wildcard DNS entry to point to your docker swarm. It also assumes you will use [let's encrypt](https://letsencrypt.org) for ssl certs. The examples provided are configured for Digital Ocean as a DNS provider, for alternatives see [traefik docs](https://docs.traefik.io/configuration/acme/#dnsprovider).
 
 ### Bootstrap
 

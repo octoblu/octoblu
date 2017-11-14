@@ -51,7 +51,7 @@ cp examples/dev/defaults.env dev/defaults.env
 octoblu-stack-generator --output dev --stack bootstrap-development --init --no-constraints
 octoblu-stack-generator --output dev --stack bootstrap-development --no-constraints
 cd dev
-docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
+docker stack deploy --compose-file ./docker-compose.yml goctoblu
 ```
 
 Once services are running, you'll need to curl the bootstrap service to generate the appropriate devices.
@@ -63,7 +63,7 @@ cd ..
 octoblu-stack-generator --output dev --stack octoblu-development --init --no-constraints
 octoblu-stack-generator --output dev --stack octoblu-development --no-constraints
 cd dev
-docker stack deploy -c ./docker-compose.yml --with-registry-auth octoblu
+docker stack deploy -c ./docker-compose.yml goctoblu
 ```
 
 ## Production Cluster
@@ -91,7 +91,7 @@ octoblu-stack-generator --output prod --stack bootstrap --init --overrides
 # Edit prod/defaults.env and set MONGODB_URI and REDIS_URI to the correct URLs
 octoblu-stack-generator --output prod --stack bootstrap --overrides
 cd prod
-docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
+docker stack deploy --compose-file ./docker-compose.yml goctoblu
 ```
 
 Once services are running, you'll need to curl the bootstrap service to generate the appropriate devices.
@@ -103,7 +103,7 @@ cd ..
 octoblu-stack-generator --output prod --stack octoblu --init --overrides
 octoblu-stack-generator --output prod --stack octoblu --overrides
 cd dev
-docker stack deploy --compose-file ./docker-compose.yml --with-registry-auth octoblu
+docker stack deploy --compose-file ./docker-compose.yml goctoblu
 ```
 
 ## Stacks

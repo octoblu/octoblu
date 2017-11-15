@@ -2,6 +2,12 @@
 
 Run your own Octobu stack in Docker Swarm.
 
+
+## WARNING!
+
+*This documentation is incomplete, if you run into any trouble, please create an [issue](https://github.com/octoblu/octoblu/issues) or submit a pull request. Thank you!*
+
+
 <!-- toc -->
 
 - [Prerequisites](#prerequisites)

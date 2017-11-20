@@ -1,6 +1,6 @@
 {
   "name": "octoblu",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generate docker-compose.yml to run octoblu",
   "main": "command.js",
   "bin": {
@@ -17,7 +17,9 @@
     "type": "git",
     "url": "git+https://github.com/octoblu/octoblu.git"
   },
-  "keywords": ["octoblu"],
+  "keywords": [
+    "octoblu"
+  ],
   "author": "Octoblu <npm@octoblu.com>",
   "license": "MIT",
   "bugs": {
@@ -29,8 +31,6 @@
     "dashdash": "^1.14.1",
     "fs-extra": "^4.0.2",
     "lodash": "^4.17.4",
-    "meshblu-http": "^10.2.0",
-    "meshblu-server": "^5.3.5",
     "mkdirp": "^0.5.1",
     "node-rsa": "^0.4.2",
     "node-yaml": "^3.1.1",

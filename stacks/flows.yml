@@ -199,7 +199,7 @@ services:
           - nanocyte-flow-deploy-service
     depends_on:
       - meshblu-core-protocol-adapter-http
-      - nanocyte-interval-service
+      - interval-service
     deploy:
       replicas: 1
       placement:

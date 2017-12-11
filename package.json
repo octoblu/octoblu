@@ -1,6 +1,6 @@
 {
   "name": "octoblu",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate docker-compose.yml to run octoblu",
   "main": "command.js",
   "bin": {

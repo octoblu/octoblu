@@ -1,0 +1,41 @@
+version: '3.4'
+
+networks:
+  common:
+    attachable: true
+    driver: 'overlay'
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+services:
+  oauth-provider:
+    image: "octoblu/oauth-provider:latest"
+    env_file: "./env.d/oauth-provider.env"
+    networks:
+      common:
+    depends_on:
+      - meshblu-core-protocol-adapter-http
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
+      restart_policy:
+        condition: any
+        delay: 30s
+        max_attempts: 5
+        window: 120s
+      update_config:
+        delay: 30s
+        failure_action: continue
+        monitor: 1m
+      labels:
+        - traefik.frontend.rule=HostRegexp:oauth,oauth.{domain:[a-zA-Z0-9.]+}
+        - traefik.port=80
+
+volumes:
+  dependencies:
+    labels:
+      - './traefik.yml'
+      - './meshblu-http.yml'

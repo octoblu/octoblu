@@ -60,3 +60,4 @@ typings/
 defaults.json
 tmp
 bootstrap/
+dev/
